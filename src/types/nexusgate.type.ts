@@ -18,7 +18,7 @@ export type RuleType =
   | "REPUTATION_BLOCK";
 export type ActionType = "DENY" | "ALLOW" | "CHALLENGE" | "LOG" | "REDIRECT";
 
-export type StatusType = "ONLINE" | "OFFLINE" | "ERROR";
+export type ServerStatusType = "ONLINE" | "OFFLINE" | "TUNNEL" | "ERROR";
 
 // ─── ENUMERATION ─────────────────────────────────────────────
 
@@ -54,12 +54,12 @@ export const ActionTypes = {
   REDIRECT: "REDIRECT",
 } as const;
 
-export const StatusTypes = {
+export const ServerStatusTypes = {
   ONLINE: "ONLINE",
   OFFLINE: "OFFLINE",
+  TUNNEL: "TUNNEL",
   ERROR: "ERROR",
 } as const;
-
 
 // ─── MODELS ───────────────────────────────────────────────────
 
@@ -83,7 +83,7 @@ export interface Server {
   url: string;
   type: ServerType;
   teamId: string;
-  status: StatusType;
+  status: ServerStatusType;
   requireToken: boolean;
   accessPolicy: AccessPolicy;
   tunnelSession: TunnelSession | null;

@@ -1,19 +1,21 @@
 // ─── Helpers ──────────────────────────────────────────────────
 
-import { ServerTypes, StatusTypes, type Server } from "@/types/nexusgate.type";
+import {
+  ServerTypes,
+  ServerStatusTypes,
+  type Server,
+  type ServerStatusType,
+} from "@/types/nexusgate.type";
 
-export function getServerStatus(
-  server: Server,
-): "online" | "offline" | "tunnel" {
+export function getServerStatus(server: Server): ServerStatusType {
   if (server.type === ServerTypes.CLOUD) {
-    return server.status === StatusTypes.ONLINE ? "online" : "offline";
+    return server.status === ServerStatusTypes.ONLINE
+      ? ServerStatusTypes.ONLINE
+      : ServerStatusTypes.OFFLINE;
   }
-  return server.tunnelSession?.isActive ? "tunnel" : "offline";
-}
-
-export function getStatusLabel(server: Server): string {
-  if (server.type === ServerTypes.CLOUD) return "En ligne";
-  return server.tunnelSession?.isActive ? "Tunnel actif" : "Hors ligne";
+  return server.tunnelSession?.isActive
+    ? ServerStatusTypes.TUNNEL
+    : ServerStatusTypes.OFFLINE;
 }
 
 export function getMethodColor(method: string): string {

@@ -1,68 +1,25 @@
 // pages/ServersPage.tsx
-import { PageHeader } from "@/components/gen/PageHeader";
-import { Overlay } from "@/components/display/Overlay";
-import { useSeoHead } from "@/composables/useSeoHead";
-import { pause } from "@/constants";
-import { Globe2 } from "@tailgrids/icons";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useSeoHead } from "@/composables/useSeoHead";
+import { PageHeader } from "@/components/gen/PageHeader";
+import { Overlay } from "@/components/display/Overlay";
+import { pause } from "@/constants";
 import { MOCK_SERVERS } from "@/constants/display/mock.constant";
-import type { Server, ServerType } from "@/types/nexusgate.type";
-import { dateFormat } from "@/helpers";
+import {
+  ServerStatusTypes,
+  type Server,
+  type ServerType,
+} from "@/types/nexusgate.type";
+import { dateFormat, timeSince } from "@/helpers";
+import { getServerStatus } from "@/helpers/server.helper";
+
+// Les composants Icones
 import ChevronRight from "@/components/icons/ChevronRight";
 import ServerIcon from "@/components/icons/ServerIcon";
+import { Globe2 } from "@tailgrids/icons";
+import StatusBadge from "@/components/network/StatusBadge";
 
-// ─── Helpers ──────────────────────────────────────────────────
-
-type ServerStatus = "online" | "tunnel" | "offline";
-
-function getServerStatus(server: Server): ServerStatus {
-  if (server.type === "CLOUD") return "online";
-  return server.tunnelSession?.isActive ? "tunnel" : "offline";
-}
-
-function timeSince(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 60) return `il y a ${minutes} min`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `il y a ${hours}h`;
-  return `il y a ${Math.floor(hours / 24)}j`;
-}
-
-// ─── Status badge ─────────────────────────────────────────────
-
-function StatusBadge({ status }: { status: ServerStatus }) {
-  const config = {
-    online: {
-      dot: "bg-emerald-400",
-      text: "text-emerald-700",
-      bg: "bg-emerald-50",
-      label: "En ligne",
-    },
-    tunnel: {
-      dot: "bg-amber-400",
-      text: "text-amber-700",
-      bg: "bg-amber-50",
-      label: "Tunnel actif",
-    },
-    offline: {
-      dot: "bg-gray-300",
-      text: "text-gray-500",
-      bg: "bg-gray-100",
-      label: "Hors ligne",
-    },
-  }[status];
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${config.bg} ${config.text}`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
-      {config.label}
-    </span>
-  );
-}
 
 function TypeBadge({ type }: { type: ServerType }) {
   const config =
@@ -99,9 +56,9 @@ function ServerCard({
         <div className="flex items-center gap-3 min-w-0">
           <div
             className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-              status === "offline"
+              status === ServerStatusTypes.OFFLINE
                 ? "bg-gray-100 text-gray-400"
-                : status === "tunnel"
+                : status === ServerStatusTypes.TUNNEL
                   ? "bg-amber-50 text-amber-500 group-hover:bg-amber-100"
                   : "bg-indigo-50 text-indigo-400 group-hover:text-indigo-600 group-hover:bg-indigo-100"
             }`}
@@ -122,7 +79,7 @@ function ServerCard({
 
       {/* Badges */}
       <div className="flex items-center gap-2 flex-wrap">
-        <StatusBadge status={status} />
+        <StatusBadge status={status} isActive />
         <TypeBadge type={server.type} />
         {server.requireToken && (
           <span className="text-xs font-medium px-2 py-0.5 rounded bg-purple-50 text-purple-600">
@@ -273,10 +230,14 @@ function EmptyState({ hasFilters }: { hasFilters: boolean }) {
 // ─── Stats summary bar ────────────────────────────────────────
 
 function SummaryBar({ servers }: { servers: Server[] }) {
-  const online = servers.filter((s) => getServerStatus(s) === "online").length;
-  const tunnel = servers.filter((s) => getServerStatus(s) === "tunnel").length;
+  const online = servers.filter(
+    (s) => getServerStatus(s) === ServerStatusTypes.ONLINE,
+  ).length;
+  const tunnel = servers.filter(
+    (s) => getServerStatus(s) === ServerStatusTypes.TUNNEL,
+  ).length;
   const offline = servers.filter(
-    (s) => getServerStatus(s) === "offline",
+    (s) => getServerStatus(s) === ServerStatusTypes.OFFLINE,
   ).length;
 
   return (
@@ -343,8 +304,10 @@ export default function ServerPage() {
     if (typeFilter !== "all" && s.type !== typeFilter) return false;
     if (statusFilter !== "all") {
       const status = getServerStatus(s);
-      if (statusFilter === "online" && status === "offline") return false;
-      if (statusFilter === "offline" && status !== "offline") return false;
+      if (statusFilter === "online" && status === ServerStatusTypes.OFFLINE)
+        return false;
+      if (statusFilter === "offline" && status !== ServerStatusTypes.OFFLINE)
+        return false;
     }
     if (
       search &&
