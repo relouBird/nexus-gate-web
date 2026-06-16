@@ -1,0 +1,534 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
+
+@plugin "@tailwindcss/forms";
+
+@theme {
+  --font-sans: "Inter Variable", sans-serif;
+  --font-mono: "JetBrains Mono Variable", monospace;
+
+  /* ======== Primary — Terracotta ========= */
+  --color-primary-50: #fdf6f0;
+  --color-primary-100: #f9e8d8;
+  --color-primary-200: #f2cdb0;
+  --color-primary-300: #e8a97e;
+  --color-primary-400: #d97c4a;
+  --color-primary-500: #c45f2e;
+  --color-primary-600: #a84a22;
+  --color-primary-700: #883a1b;
+  --color-primary-800: #6b2e17;
+  --color-primary-900: #4f2213;
+  --color-primary-950: #2d1109;
+
+  /* ======== Secondary — Sage ========= */
+  --color-secondary-50: #f2f5f0;
+  --color-secondary-100: #e0e9db;
+  --color-secondary-200: #c1d3b8;
+  --color-secondary-300: #99b78d;
+  --color-secondary-400: #739862;
+  --color-secondary-500: #557a46;
+  --color-secondary-600: #426038;
+  --color-secondary-700: #34492c;
+  --color-secondary-800: #283720;
+  --color-secondary-900: #1c2717;
+  --color-secondary-950: #0f1509;
+
+  /* ======== Accent — Amber chaud ========= */
+  --color-accent-50: #fefcf8;
+  --color-accent-100: #fdf5e8;
+  --color-accent-200: #f9e8c8;
+  --color-accent-300: #f3d49a;
+  --color-accent-400: #ebba62;
+  --color-accent-500: #d9993a;
+  --color-accent-600: #b8792a;
+  --color-accent-700: #8f5c20;
+  --color-accent-800: #6a4318;
+  --color-accent-900: #4a2f11;
+  --color-accent-950: #2a1a09;
+
+  /* ======== Text Color ========= */
+  --color-title-50: #1f1209;
+  --color-text-color: #3d2410;
+  --color-text-secondary: #7a5a3e;
+  --color-text-tertiary: #a8876a;
+
+  /* ======== White ========= */
+  --color-white-100: #ffffff;
+  --color-white-90: #ffffffcc;
+  --color-white-80: #ffffffcc;
+  --color-white-70: #ffffffb3;
+  --color-white-60: #ffffff99;
+
+  /* ======== Border Color ========= */
+  --border-color-base-50: #f9f3ee;
+  --border-color-base-100: #f2e8de;
+  --border-color-base-200: #e2ccb8;
+  --border-color-base-300: #c4a080;
+
+  /* ======== Foreground Color ========= */
+  --color-foreground-50: #1a0d05;
+  --color-foreground-100: #2d1109;
+  --color-foreground-soft-50: #2d1109;
+  --color-foreground-soft-100: #2d1109;
+  --color-foreground-soft-200: #4f2213;
+  --color-foreground-soft-300: #1a0d05;
+  --color-foreground-soft-400: #4f2213;
+  --color-foreground-soft-500: #6b2e17;
+
+  /* ======== Background Color ========= */
+  --color-background-50: #ffffff;
+  --color-background-100: #ffffff;
+  --color-background-soft-50: #fdf6f0a9;
+  --color-background-soft-100: #f9ede2;
+  --color-background-soft-200: #f5e4d4;
+  --color-background-soft-300: #f2ddc9;
+  --color-background-soft-400: #e8ccb4;
+  --color-background-soft-500: #d9b898;
+  --color-background-success-600: #557a46;
+
+  /* ======== Button Color ========= */
+
+  /* Primary */
+  --color-button-primary-background: #c45f2e;
+  --color-button-primary-hover-background: #a84a22;
+  --color-button-primary-text: #ffffff;
+  --color-button-primary-focus-ring: rgba(196, 95, 46, 0.2);
+
+  /* Outline */
+  --color-button-outline-background: #ffffff;
+  --color-button-outline-hover-background: #fdf6f0;
+  --color-button-outline-border: #e2ccb8;
+  --color-button-outline-focus-ring: rgba(196, 95, 46, 0.12);
+  --color-button-outline-text: #4f2213;
+  --color-button-outline-hover-text: #2d1109;
+  --color-button-outline-disabled-background: #f5e4d4;
+  --color-button-outline-disabled-text: #a8876a;
+
+  /* Disable */
+  --color-button-disabled-background: #f5e4d4;
+  --color-button-disabled-border: #f5e4d4;
+  --color-button-disabled-text: #a8876a;
+
+  /* Error */
+  --color-button-error-background: #dc2626;
+  --color-button-error-hover-background: #b91c1c;
+  --color-button-error-border: #ef4444;
+  --color-button-error-text: #ffffff;
+  --color-button-error-focus-ring: rgba(220, 38, 38, 0.2);
+
+  /* Error Outline */
+  --color-button-error-outline-background: #fef2f2;
+  --color-button-error-outline-hover-background: #fecaca;
+  --color-button-error-outline-border: #ef4444;
+  --color-button-error-outline-focus-border: #dc2626;
+  --color-button-error-outline-focus-ring: rgba(220, 38, 38, 0.2);
+  --color-button-error-outline-text: #b91c1c;
+  --color-button-error-outline-hover-text: #b91c1c;
+
+  /* Success */
+  --color-button-success-background: #557a46;
+  --color-button-success-hover-background: #426038;
+  --color-button-success-border: #739862;
+  --color-button-success-text: #ffffff;
+  --color-button-success-focus-ring: rgba(85, 122, 70, 0.2);
+
+  /* Success Outline */
+  --color-button-success-outline-background: #f2f5f0;
+  --color-button-success-outline-hover-background: #c1d3b8;
+  --color-button-success-outline-border: #739862;
+  --color-button-success-outline-focus-border: #557a46;
+  --color-button-success-outline-text: #426038;
+  --color-button-success-outline-hover-text: #34492c;
+  --color-button-success-outline-focus-ring: rgba(85, 122, 70, 0.2);
+
+  /* Ghost */
+  --color-button-ghost-text: #a8876a;
+  --color-button-ghost-hover-text: #7a5a3e;
+  --color-button-ghost-hover-background: #fdf6f0;
+
+  /* Button Group Primary */
+  --color-button-group-primary-background: #ffffff;
+  --color-button-group-primary-hover-background: #c45f2e;
+  --color-button-group-primary-text: #c45f2e;
+  --color-button-group-primary-hover-text: #ffffff;
+
+  /* Button Group Secondary */
+  --color-button-group-secondary-background: #ffffff;
+  --color-button-group-secondary-text: #3d2410;
+
+  /* ======== Badge Color ========= */
+
+  /* Badge Neutral */
+  --color-badge-neutral-background: #f5e4d4;
+  --color-badge-neutral-text: #3d2410;
+  --color-badge-neutral-icon-color: #7a5a3e;
+
+  /* Badge Primary */
+  --color-badge-primary-background: #f9e8d8;
+  --color-badge-primary-text: #c45f2e;
+  --color-badge-primary-icon-color: #c45f2e;
+
+  /* Badge Error */
+  --color-badge-error-background: #fef2f2;
+  --color-badge-error-text: #b91c1c;
+  --color-badge-error-icon-color: #ef4444;
+
+  /* Badge Warning */
+  --color-badge-warning-background: #fffbeb;
+  --color-badge-warning-text: #b45309;
+  --color-badge-warning-icon-color: #f59e0b;
+
+  /* Badge Success */
+  --color-badge-success-background: #f2f5f0;
+  --color-badge-success-text: #426038;
+  --color-badge-success-icon-color: #739862;
+
+  /* Badge Cyan */
+  --color-badge-cyan-background: #ecfeff;
+  --color-badge-cyan-text: #0e7490;
+  --color-badge-cyan-icon-color: #06b6d4;
+
+  /* Badge Sky */
+  --color-badge-sky-background: #f0f9ff;
+  --color-badge-sky-text: #0369a1;
+  --color-badge-sky-icon-color: #0ea5e9;
+
+  /* Badge Blue */
+  --color-badge-blue-background: #eff6ff;
+  --color-badge-blue-text: #1d4ed8;
+  --color-badge-blue-icon-color: #3b82f6;
+
+  /* Badge Violet */
+  --color-badge-violet-background: #f5f3ff;
+  --color-badge-violet-text: #6d28d9;
+  --color-badge-violet-icon-color: #8b5cf6;
+
+  /* Badge Purple */
+  --color-badge-purple-background: #faf5ff;
+  --color-badge-purple-text: #7e22ce;
+  --color-badge-purple-icon-color: #a855f7;
+
+  /* Badge Pink */
+  --color-badge-pink-background: #fdf2f8;
+  --color-badge-pink-text: #be185d;
+  --color-badge-pink-icon-color: #ec4899;
+
+  /* Badge Rose */
+  --color-badge-rose-background: #fff1f2;
+  --color-badge-rose-text: #be123c;
+  --color-badge-rose-icon-color: #f43f5e;
+
+  /* Badge Orange */
+  --color-badge-orange-background: #fff7ed;
+  --color-badge-orange-text: #c2410c;
+  --color-badge-orange-icon-color: #f97316;
+
+  /* ======== Chart ========= */
+  --color-chart-tick: var(--color-text-secondary);
+  --color-chart-legend: var(--color-text-secondary);
+  --color-chart-grid: var(--border-color-base-100);
+
+  /* ======== Sidebar ========= */
+
+  /* Nav Item */
+  --color-sidebar-nav-default-background: #ffffff;
+  --color-sidebar-nav-hover-background: #fdf6f0;
+  --color-sidebar-nav-secondary-hover-background: #f9e8d8;
+  --color-sidebar-nav-hover-text: #3d2410;
+  --color-sidebar-nav-active-text: #c45f2e;
+  --color-sidebar-nav-active-background: #f9e8d8;
+  --color-sidebar-nav-focused-background: #f9e8d8;
+  --color-sidebar-nav-default-text: #3d2410;
+  --color-sidebar-nav-icon: #7a5a3e;
+
+  /* Sidebar Badge */
+  --color-sidebar-badge-background: #c45f2e;
+  --color-sidebar-badge-text: #ffffff;
+
+  /* Sidebar Footer */
+  --color-sidebar-footer-background: #fdf6f0;
+  --color-sidebar-footer-title: #2d1109;
+  --color-sidebar-footer-subtitle: #7a5a3e;
+  --color-sidebar-footer-button-text: #ffffff;
+
+  /* ======== Card Color ========= */
+  --color-card-background-50: #ffffff;
+  --color-card-background-100: #ffffff;
+  --color-card-background-200: #f9ede2;
+  --color-card-background-300: #fdf6f0;
+
+  /* ======== Alert Success Color ========= */
+  --color-alert-success-background: #f2f5f0;
+  --color-alert-success-icon-background: #557a46;
+  --color-alert-success-border: #c1d3b8;
+  --color-alert-success-close-icon: #557a46;
+  --color-alert-success-title: #283720;
+  --color-alert-success-description: #34492c;
+  --color-alert-success-button-background: #557a46;
+  --color-alert-success-button-hover-background: #426038;
+  --color-alert-success-button-text: #34492c;
+
+  /* ======== Alert Danger Color ========= */
+  --color-alert-danger-background: #fef2f2;
+  --color-alert-danger-icon-background: #dc2626;
+  --color-alert-danger-border: #fecaca;
+  --color-alert-danger-close-icon: #b91c1c;
+  --color-alert-danger-title: #991b1b;
+  --color-alert-danger-description: #b91c1c;
+  --color-alert-danger-button-background: #dc2626;
+  --color-alert-danger-button-hover-background: #b91c1c;
+  --color-alert-danger-button-text: #b91c1c;
+
+  /* ======== Alert Info Color ========= */
+  --color-alert-info-background: #fefcf8;
+  --color-alert-info-icon-background: #d9993a;
+  --color-alert-info-border: #f9e8c8;
+  --color-alert-info-close-icon: #b8792a;
+  --color-alert-info-title: #4a2f11;
+  --color-alert-info-description: #6a4318;
+  --color-alert-info-button-background: #b8792a;
+  --color-alert-info-button-hover-background: #8f5c20;
+  --color-alert-info-button-text: #6a4318;
+
+  /* ======== Alert Warning Color ========= */
+  --color-alert-warning-background: #fffbeb;
+  --color-alert-warning-icon-background: #f59e0b;
+  --color-alert-warning-border: #fde68a;
+  --color-alert-warning-close-icon: #b45309;
+  --color-alert-warning-title: #78350f;
+  --color-alert-warning-description: #92400e;
+  --color-alert-warning-button-background: #b45309;
+  --color-alert-warning-button-hover-background: #92400e;
+  --color-alert-warning-button-text: #92400e;
+
+  /* ======== Alert Default Color ========= */
+  --color-alert-default-background: #fdf6f0;
+  --color-alert-default-icon-background: #7a5a3e;
+  --color-alert-default-border: #f2e8de;
+  --color-alert-default-close-icon: #3d2410;
+  --color-alert-default-title: #2d1109;
+  --color-alert-default-description: #3d2410;
+  --color-alert-default-button-background: #3d2410;
+  --color-alert-default-button-hover-background: #2d1109;
+  --color-alert-default-button-text: #3d2410;
+
+  /* ======== Input Color ========= */
+  --color-input-background: #ffffff;
+  --color-input-label-text: #3d2410;
+  --color-input-disabled-text: #e2ccb8;
+  --color-input-placeholder-text: #a8876a;
+  --color-input-primary-focus-border: #e8a97e;
+  --color-input-error-focus-border: #ef4444;
+  --color-input-success-focus-border: #739862;
+  --color-input-error: #ef4444;
+  --color-input-success: #739862;
+
+  /* ======== Tab Color ========= */
+  --color-tab-background: #f5e4d4;
+  --color-tab-active-background: #ffffff;
+  --color-tab-secondary-active-background: #f9e8d8;
+
+  /* ======== Checkbox Color ========= */
+  --color-checkbox-background: #ffffff;
+  --color-checkbox-checked-border: #c45f2e;
+  --color-checkbox-checked-background: #c45f2e;
+  --color-checkbox-checked-icon-color: #ffffff;
+
+  /* ======== Scrollbar Color ========= */
+  --color-scrollbar-background: #e2ccb8;
+
+  /* ======== Datepicker Color ========= */
+  --color-datepicker-background: #ffffff;
+  --color-datepicker-selected-background: #fdf6f0;
+
+  /* ======== Dropdowns Color ========= */
+  --color-dropdown-background: #ffffff;
+  --color-dropdown-hover-background: #fdf6f0;
+  --color-dropdown-secondary-background: #ffffff;
+  --color-dropdown-divider: #f9ede2;
+
+  /* ======== Calendar Color ========= */
+  --color-calendar-primary-badge: #c45f2e;
+  --color-calendar-primary-background: #f9e8d8;
+  --color-calendar-success-badge: #739862;
+  --color-calendar-success-background: #f2f5f0;
+  --color-calendar-warning-badge: #d9993a;
+  --color-calendar-warning-background: #fefcf8;
+  --color-calendar-danger-badge: #ef4444;
+  --color-calendar-danger-background: #fef2f2;
+  --color-calendar-info-badge: #d9993a;
+  --color-calendar-info-background: #fefcf8;
+  --color-calendar-text: #3d2410;
+  --color-calendar-menu-text: #a8876a;
+  --color-calendar-dropdown-background: #ffffff;
+
+  /* ======== Pricing Table Color ========= */
+  --color-pricing-active-switcher-background: #ffffff;
+  --color-pricing-active-card-background: #2d1109;
+  --color-pricing-button-background: #2d1109;
+  --color-pricing-icon-color: #c45f2e;
+  --color-pricing-icon-background: #f9e8d8;
+
+  /* ======== FAQ's Color ========= */
+  --color-faq-primary-active-background: #fdf6f0;
+  --color-faq-secondary-active-background: #f9e8d8;
+  --color-faq-secondary-active-border: #f2cdb0;
+  --color-faq-secondary-active-title: #2d1109;
+  --color-faq-secondary-active-text: #3d2410;
+
+  /* ======== Chat List Color ========= */
+  --color-chat-list-background-primary: #3d2410;
+  --color-chat-list-background-primary-alt: #f5e4d4;
+  --color-chat-list-background-secondary: #c45f2e;
+  --color-chat-list-background-secondary-alt: #f9e8d8;
+
+  /* ======== Tooltip Color ========= */
+  --color-tooltip-text: #3d2410;
+
+  /* ======== Popovers Color ========= */
+  --color-popover-title-background: #f5e4d4;
+  --color-popover-border: #f2e8de;
+
+  /* ======== Skeleton Color ========= */
+  --color-skeleton-gradient-50: #f2e8de;
+  --color-skeleton-gradient-100: #fdf6f0;
+  --color-skeleton-gradient-200: #f2e8de;
+
+  /* ======== 404 Page Color ========= */
+  --color-404-background: #ffffff66;
+  --color-404-foreground: #f2e8de;
+
+  /* ======== Blogs Color ========= */
+  --color-blog-shape: #f2e8de;
+
+  /* ======== Modal Color ========= */
+  --color-modal-button-success-background: #557a46;
+  --color-modal-button-info-background: #d9993a;
+  --color-modal-button-warning-background: #b45309;
+  --color-modal-button-error-background: #dc2626;
+
+  /* ======== Section Title Color ========= */
+  --color-section-title-badge: #c45f2e;
+  --color-section-title-badge-background: #c45f2e0d;
+
+  /* ======== Mobile Nav Menu Button Color ========= */
+  --color-mobile-nav-icon: #3d2410;
+  --color-mobile-nav-background: #ffffff;
+  --color-mobile-nav-hover-background: #fdf6f0;
+
+  /* ======== Footer Color ========= */
+  --color-footer-card-background: #fdf6f0;
+  --color-footer-background: #ffffff;
+
+  /* ======== Bento Color ========= */
+  --color-bento-card-background: #f5e4d4;
+  --color-bento-gradient-shade-1: #ffffff00;
+  --color-bento-gradient-shade-2: #ffffff80;
+  --color-bento-gradient-shade-3: #ffffff;
+
+  /* ======== CTA Color ========= */
+  --color-cta-icon-background: #ffffff;
+  --color-cta-background: #ffffff;
+
+  /* ======== Hero Color ========= */
+  --color-hero-background: #f5e4d4;
+  --color-hero-card-background: #ffffff;
+  --color-hero-card-2-background: #f9ede2;
+  --color-hero-gradient-shade-1: #ffffff99;
+  --color-hero-gradient-shade-2: #ffffff;
+
+  /* ======== Toggle Color ========= */
+  --color-toggle-default-background: #e2ccb8;
+  --color-toggle-disabled-foreground: #ffffff;
+  --color-toggle-disabled-background: #f5e4d4;
+  --color-toggle-active-background: #c45f2e;
+
+  /* ======== Map Color ========= */
+  --color-map-fill: #e2ccb8;
+
+  /* ======== AI Sidebar Gradient Color ========= */
+  --color-ai-sidebar-primary-gradient-shade-1: #ffffff;
+  --color-ai-sidebar-primary-gradient-shade-2: #ffffff00;
+  --color-ai-sidebar-secondary-gradient-shade-1: #fdf6f0;
+  --color-ai-sidebar-secondary-gradient-shade-2: #fdf6f000;
+
+  /* ======== AI Sidebar Menu Color ========= */
+  --color-ai-sidebar-hover-primary-shade-1: #f9ede2;
+  --color-ai-sidebar-hover-primary-shade-2: #f9ede200;
+  --color-ai-sidebar-hover-secondary-shade-1: #f2e8de;
+  --color-ai-sidebar-hover-secondary-shade-2: #f2e8de00;
+  --color-ai-sidebar-hover-primary-background: #f9ede2;
+  --color-ai-sidebar-hover-secondary-background: #f2e8de;
+  --color-ai-title-gradient-shade-1: #2d1109;
+  --color-ai-title-gradient-shade-2: #a8876a;
+  --color-ai-hero-blend-1: #f5e4d4;
+  --color-ai-hero-blend-2: #f5e4d400;
+
+  /* ======== Shadows ========= */
+  --shadow-xs: 0px 1px 2px 0px rgba(45, 17, 9, 0.05);
+  --shadow-sm: 0px 1px 3px 0px rgba(45, 17, 9, 0.1);
+  --shadow-md:
+    0px 4px 8px -2px rgba(45, 17, 9, 0.1),
+    0px 2px 4px -2px rgba(45, 17, 9, 0.06);
+  --shadow-lg:
+    0px 12px 16px -4px rgba(45, 17, 9, 0.08),
+    0px 4px 6px -2px rgba(45, 17, 9, 0.03);
+  --shadow-xl: 0px 1px 2px 0px rgba(45, 17, 9, 0.05);
+  --shadow-2xl: 0px 1px 2px 0px rgba(45, 17, 9, 0.05);
+  --shadow-3xl: 0px 1px 2px 0px rgba(45, 17, 9, 0.05);
+  --drop-shadow-theme-3xl: 0 32px 64px rgba(45, 17, 9, 0.14);
+  --popover-shadow: 0px 5px 5px -2px rgba(45, 17, 9, 0.04);
+  --shadow-hero: 0px -14px 100px 0px rgba(45, 17, 9, 0.05);
+
+  --animate-pulse-custom: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  /* ======== Semantic Status Colors ========= */
+  --color-success-50: #f2f5f0;
+  --color-success-100: #c1d3b8;
+  --color-500: #739862;
+  --color-success-500: #557a46;
+  --color-success-600: #426038;
+
+  --color-error-50: #fef2f2;
+  --color-error-100: #fecaca;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fde68a;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+
+  --color-info-50: #fefcf8;
+  --color-info-100: #f9e8c8;
+  --color-info-400: #ebba62;
+  --color-info-500: #d9993a;
+  --color-info-600: #b8792a;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-mono);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
