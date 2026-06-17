@@ -173,3 +173,17 @@ export function extractErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
 }
+
+export function maskEmail(email: string): string {
+  const [localPart, domain] = email.split("@");
+
+  if (!localPart || !domain) {
+    return email;
+  }
+
+  const visibleChars = Math.min(2, localPart.length);
+  const visiblePart = localPart.slice(0, visibleChars);
+  const maskedPart = "*".repeat(Math.max(0, localPart.length - visibleChars));
+
+  return `${visiblePart}${maskedPart}@${domain}`;
+}

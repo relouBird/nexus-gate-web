@@ -4,7 +4,8 @@ import { useNotificationStore } from "./stores/notification.store";
 import { useStore } from "zustand/react";
 
 // Load les composants utiles
-import { Layout } from "@/components/display/Layout";
+import { LayoutDefault } from "@/components/display/LayoutDefault";
+import { LayoutAuth } from "./components/display/LayoutAuth";
 import { Toast } from "@/components/ui/Toast";
 
 // Load les pages du routage
@@ -15,6 +16,11 @@ import TokensPage from "@/routes/network/TokensPage";
 import RulePage from "@/routes/network/RulePage";
 import UsersPage from "@/routes/team/UsersPage";
 import SettingsPage from "@/routes/account/SettingsPage";
+import LoginPage from "@/routes/auth/LoginPage";
+import RegisterPage from "@/routes/auth/RegisterPage";
+import OtpPage from "./routes/auth/OtpPage";
+import ResetPasswordPage from "./routes/auth/ResetPasswordPage";
+import ForgotPasswordPage from "./routes/auth/ForgotPasswordPage";
 
 // Load les styles globaux
 import "./App.css";
@@ -37,7 +43,7 @@ function Build() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route element={<Layout />}>
+          <Route element={<LayoutDefault />}>
             <Route index element={<DashboardPage />} />
             <Route path="network">
               <Route path="servers" element={<ServerPage />} />
@@ -51,6 +57,19 @@ function Build() {
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="/chats" element={<ChatsPage />} />
+          </Route>
+          <Route path="auth" element={<LayoutAuth />}>
+            <Route path="login" element={<LoginPage />}></Route>
+            <Route path="register" element={<RegisterPage />}></Route>
+            <Route path="verification" element={<OtpPage />}></Route>
+            <Route
+              path="forgot-password"
+              element={<ForgotPasswordPage />}
+            ></Route>
+            <Route
+              path="reset-password"
+              element={<ResetPasswordPage />}
+            ></Route>
           </Route>
         </Routes>
 
