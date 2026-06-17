@@ -146,20 +146,20 @@ export default function DashboardPage() {
                 value={stats.rules.active}
                 subValue={`/ ${stats.rules.total}`}
                 icon={<MenuFriesLeft1 size={17} />}
-                iconColor="purple"
+                iconColor="bg-purple-50 text-purple-400"
               />
               <StatSecondaryCard
                 label="Membres équipe"
                 value={stats.members.total}
                 icon={<UserMultiple4 size={17} />}
-                iconColor="teal"
+                iconColor="bg-teal-50 text-teal-400"
               />
               <StatSecondaryCard
                 label="Taux d'erreur"
                 value={`${errorRate}%`}
                 valueColor="error"
                 icon={<Plus size={20} />}
-                iconColor="amber"
+                iconColor="bg-amber-50 text-amber-400"
               />
             </div>
 
@@ -214,7 +214,9 @@ export default function DashboardPage() {
                     <span className="text-xs text-slate-400 w-14 shrink-0">
                       Méthode
                     </span>
-                    <span className="text-xs text-slate-400 flex-1">Chemin</span>
+                    <span className="text-xs text-slate-400 flex-1">
+                      Chemin
+                    </span>
                     <span className="text-xs text-slate-400 hidden sm:block max-w-30">
                       Serveur
                     </span>

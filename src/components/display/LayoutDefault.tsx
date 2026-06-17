@@ -6,7 +6,7 @@ export function LayoutDefault() {
   return (
     <div className="min-h-screen bg-background-soft-50 font-sans">
       <Sidebar />
-      <main className="mx-auto max-w-7xl ml-64">
+      <main className="mx-auto max-w-7xl ml-64 pt-16">
         <Topbar />
         <div className="px-6 py-8">
           <Outlet />

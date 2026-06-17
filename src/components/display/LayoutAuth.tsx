@@ -20,8 +20,8 @@ export function LayoutAuth() {
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-2">
-          <img src="/logo.png" alt="NexusGate" className="size-9 rounded-xl" />
-          <span className="font-mono font-semibold text-white text-lg tracking-tight leading-none">
+          <img src="/logo.png" alt="NexusGate" className="size-16 rounded-xl" />
+          <span className="font-mono font-semibold text-white text-2xl tracking-tight leading-none">
             Nexus
             <br />
             <span className="text-primary-400">Gate</span>

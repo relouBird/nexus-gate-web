@@ -3,7 +3,7 @@ import { Breadcrumb } from "@/components/ui/Breadcrumb";
 // Topbar.tsx
 export function Topbar() {
   return (
-    <header className="relative top-0 z-50 w-full border-b border-base-200 bg-background-50/95 backdrop-blur-sm">
+    <header className="fixed top-0 left-0 pl-64 right-0 z-48 w-full border-b border-base-200 bg-background-50/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <Breadcrumb />
