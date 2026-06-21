@@ -12,6 +12,8 @@ import { Spinner } from "@/components/ui/Spinner";
 import ShieldIcon from "@/components/icons/ShieldIcon";
 import { useResendTimer } from "@/composables/useResendTimer";
 import { maskEmail } from "@/helpers";
+import { useAuthStore } from "@/stores/auth.store";
+import { useStore } from "zustand";
 
 // ─── Page ─────────────────────────────────────────────────────
 
@@ -21,6 +23,8 @@ export default function OtpPage() {
     subtitle: "Vérifiez votre compte",
     forcePrefix: true,
   });
+
+  const { pendingEmail, verifyOtp, sendOtp } = useStore(useAuthStore);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,7 +40,8 @@ export default function OtpPage() {
 
   // Email masqué — sera fourni par le state de navigation ou l'authStore
   // ex: navigate('/login/otp', { state: { email: 'alice@...' } })
-  const maskedEmail = maskEmail((location.state as string | null) ?? "");
+  const emailToMask = (location.state as string | null) ?? pendingEmail ?? "";
+  const maskedEmail = maskEmail(emailToMask);
 
   const isComplete = otp.length === otpLength;
 
@@ -49,8 +54,12 @@ export default function OtpPage() {
     setError(null);
     try {
       // → POST /auth/otp/verify
-      await pause(2000);
-      navigate("/");
+
+      const response = await verifyOtp({ email: emailToMask, code: otp });
+      await pause(500);
+      if (response.status == 201 || response.status == 200) {
+        navigate("/");
+      }
     } catch {
       setError("Code incorrect ou expiré. Vérifiez et réessayez.");
       setOtp("");
@@ -71,10 +80,12 @@ export default function OtpPage() {
     setResendLoading(true);
     setResendSuccess(false);
     setError(null);
+
     try {
       // TODO: await authClient.sendOTP(email)
       // → POST /auth/otp/send
-      await pause(1000);
+      await sendOtp({ email: emailToMask, action: "login" });
+      await pause(500);
       resetTimer();
       setResendSuccess(true);
       setOtp("");

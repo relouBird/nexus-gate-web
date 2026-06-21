@@ -12,6 +12,8 @@ import {
 import { Envelope1, ErrorCircle1 } from "@tailgrids/icons";
 import useForm from "@/composables/useForm";
 import * as yup from "yup";
+import { useAuthStore } from "@/stores/auth.store";
+import { useStore } from "zustand";
 
 // ─── Page ─────────────────────────────────────────────────────
 
@@ -21,6 +23,9 @@ export default function LoginPage() {
     subtitle: "Connectez-vous à votre espace NexusGate",
     forcePrefix: true,
   });
+
+  // La store
+  const { login: loginSession } = useStore(useAuthStore);
 
   const navigate = useNavigate();
 
@@ -33,8 +38,8 @@ export default function LoginPage() {
         .string()
         .min(8, "Le mot de passe doit contenir au moins 8 caractères")
         .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/,
-          "Le mot de passe doit contenir chiffres et lettres",
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          "Le mot de passe doit contenir des chiffres et des lettres et un caractère spécial.",
         )
         .required("Mot de Passe Requis."),
     }),
@@ -53,15 +58,23 @@ export default function LoginPage() {
       if (!isValid) {
         return;
       }
+      await pause(1000);
       // Simuler un appel API
+      const res = await loginSession(formT.data);
       //   const res = await formT.submit(() => authStore.login(form.data));
-      await pause(2000);
 
-      console.log("Login:", formT.data);
+      if (res?.status == 200 || res?.status == 201) {
+        navigate("/");
+      }
 
       formT.clear();
       formT.data.password = "";
-      navigate("/auth/verification", { state: formT.data.email });
+
+      if (res?.status == 401) {
+        navigate("/auth/verification", { state: formT.data.email });
+      }
+
+      console.log("Login:", formT.data);
     } catch (error) {
       setFinalError(
         "Email ou mot de passe incorrect. Vérifiez vos identifiants.",
@@ -113,7 +126,10 @@ export default function LoginPage() {
             placeholder="alice@techcorp.com"
             autoComplete="email"
             value={formT.data.email}
-            onChange={(e) => formT.setData("email", e.target.value)}
+            onChange={(e) => {
+              setFinalError(undefined);
+              formT.setData("email", e.target.value);
+            }}
             onBlur={() => formT.validateField("email")}
             hasError={!!formT.errors.email}
             leftIcon={<Envelope1 className="w-5 h-5" />}
@@ -132,7 +148,10 @@ export default function LoginPage() {
             placeholder="••••••••"
             autoComplete="current-password"
             value={formT.data.password}
-            onChange={(e) => formT.setData("password", e.target.value)}
+            onChange={(e) => {
+              setFinalError(undefined);
+              formT.setData("password", e.target.value);
+            }}
             onBlur={() => formT.validateField("password")}
             hasError={!!formT.errors.password}
             disabled={loading}

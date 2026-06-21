@@ -1,6 +1,8 @@
 // layouts/LayoutAuth.tsx
-import { Outlet } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import BrandingGridIcon from "../icons/BrandingGridIcon";
+import { useAuthStore } from "@/stores/auth.store";
+import { useStore } from "zustand";
 
 /**
  * Layout pour les pages publiques : Login, Register.
@@ -8,6 +10,13 @@ import BrandingGridIcon from "../icons/BrandingGridIcon";
  * Sur mobile : plein écran formulaire uniquement.
  */
 export function LayoutAuth() {
+  const location = useLocation();
+  // Remplacez cette condition par votre vraie logique d'authentification (ex: token dans localStorage)
+  const { accessToken } = useStore(useAuthStore);
+
+  if (accessToken && location.pathname.includes("/login")) {
+    return <Navigate to={"/"} replace />;
+  }
   return (
     <div className="min-h-screen flex font-sans bg-background-soft-50">
       {/* ── Colonne gauche — Branding (desktop uniquement) ── */}

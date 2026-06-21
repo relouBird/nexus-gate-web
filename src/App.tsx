@@ -24,6 +24,7 @@ import ForgotPasswordPage from "./routes/auth/ForgotPasswordPage";
 
 // Load les styles globaux
 import "./App.css";
+import DetailsServerPage from "./routes/network/DetailsServerPage";
 
 function Build() {
   const { close, visible, message, color } = useStore(useNotificationStore);
@@ -47,6 +48,7 @@ function Build() {
             <Route index element={<DashboardPage />} />
             <Route path="network">
               <Route path="servers" element={<ServerPage />} />
+              <Route path="servers/:id" element={<DetailsServerPage />} />
               <Route path="tokens" element={<TokensPage />} />
               <Route path="rule" element={<RulePage />} />
             </Route>
@@ -59,17 +61,11 @@ function Build() {
             <Route path="/chats" element={<ChatsPage />} />
           </Route>
           <Route path="auth" element={<LayoutAuth />}>
-            <Route path="login" element={<LoginPage />}></Route>
-            <Route path="register" element={<RegisterPage />}></Route>
-            <Route path="verification" element={<OtpPage />}></Route>
-            <Route
-              path="forgot-password"
-              element={<ForgotPasswordPage />}
-            ></Route>
-            <Route
-              path="reset-password"
-              element={<ResetPasswordPage />}
-            ></Route>
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="verification" element={<OtpPage />} />
+            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="reset-password" element={<ResetPasswordPage />} />
           </Route>
         </Routes>
 

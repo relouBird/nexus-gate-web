@@ -121,7 +121,7 @@ export function PasswordInput({
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-foreground-soft-500/40 hover:text-foreground-soft-500 transition-colors"
+        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-foreground-soft-500/40 hover:text-foreground-soft-500 transition-colors outline-none focus:outline-none"
         aria-label={
           visible ? "Masquer le mot de passe" : "Afficher le mot de passe"
         }

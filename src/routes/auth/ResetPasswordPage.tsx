@@ -26,6 +26,8 @@ import {
 // Formulaires
 import useForm from "@/composables/useForm";
 import * as yup from "yup";
+import { useAuthStore } from "@/stores/auth.store";
+import { useStore } from "zustand";
 
 type PageState = "form" | "success";
 
@@ -37,6 +39,8 @@ export default function ResetPasswordPage() {
     subtitle: "Choisissez un nouveau mot de passe",
     forcePrefix: true,
   });
+
+  const { pendingEmail, changePassword } = useStore(useAuthStore);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,7 +76,10 @@ export default function ResetPasswordPage() {
         .required("Veuillez confirmer votre mot de passe."),
     }),
     {
-      email: (location.state as { email?: string } | null)?.email ?? "",
+      email:
+        (location.state as { email?: string } | null)?.email ??
+        pendingEmail ??
+        "",
     },
   );
   const [loading, setLoading] = useState(false);
@@ -93,7 +100,13 @@ export default function ResetPasswordPage() {
     try {
       // Le backend devra vérifier l'OTP puis mettre à jour le mot de passe.
       // Actuellement, /auth/otp/verify + une future route PATCH /auth/users/password
-      await pause(2500);
+      await changePassword({
+        email: formTemplate.data.email,
+        password: formTemplate.data.password,
+        confirmPassword: formTemplate.data.confirmPassword,
+        code: formTemplate.data.otp,
+      });
+      await pause(500);
       setPageState("success");
     } catch {
       setGlobalError("Code invalide ou expiré. Vérifiez le code et réessayez.");

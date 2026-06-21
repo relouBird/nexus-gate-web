@@ -6,9 +6,10 @@ export type HeaderProps = {
   title: string;
   description: string;
   buttonName?: string;
+  disabled?: boolean;
   icon?: IconType | ReactNode;
   children?: ReactNode;
-  onView: () => void;
+  onView?: () => void;
 };
 
 export function PageHeader({
@@ -17,6 +18,7 @@ export function PageHeader({
   onView,
   icon,
   buttonName,
+  disabled,
   children,
 }: HeaderProps) {
   const IconComp = icon;
@@ -44,22 +46,25 @@ export function PageHeader({
           )}
 
           {/* Main Create Button */}
-          <button
-            onClick={onView}
-            className="group relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-          >
-            <span className="relative flex h-5 w-5 items-center justify-center">
-              {IconComp && typeof IconComp === "function" ? (
-                <IconComp size={20} className="h-5 w-5" />
-              ) : (
-                <Plus className="h-5 w-5 transition-transform group-hover:rotate-90" />
-              )}
-            </span>
-            <span className="tracking-wide">
-              {buttonName ? buttonName : "Créer"}
-            </span>
-            <span className="absolute inset-0 rounded-xl bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
-          </button>
+          {!disabled && (
+            <button
+              type="button"
+              onClick={onView}
+              className="group relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            >
+              <span className="relative flex h-5 w-5 items-center justify-center">
+                {IconComp && typeof IconComp === "function" ? (
+                  <IconComp size={20} className="h-5 w-5" />
+                ) : (
+                  <Plus className="h-5 w-5 transition-transform group-hover:rotate-90" />
+                )}
+              </span>
+              <span className="tracking-wide">
+                {buttonName ? buttonName : "Créer"}
+              </span>
+              <span className="absolute inset-0 rounded-xl bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+            </button>
+          )}
         </div>
       </div>
     </div>

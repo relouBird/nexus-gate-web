@@ -16,6 +16,8 @@ import * as yup from "yup";
 import { ChevronLeft, Envelope1, ErrorCircle1 } from "@tailgrids/icons";
 import MailSentIcon from "@/components/icons/MailSentIcon";
 import ChevronRight from "@/components/icons/ChevronRight";
+import { useAuthStore } from "@/stores/auth.store";
+import { useStore } from "zustand";
 
 // ─── États de la page ─────────────────────────────────────────
 
@@ -30,6 +32,8 @@ export default function ForgotPasswordPage() {
     forcePrefix: true,
   });
 
+  const { pendingEmail, resetPassword } = useStore(useAuthStore);
+
   const navigate = useNavigate();
   const [pageState, setPageState] = useState<PageState>("form");
   const [globalError, setGlobalError] = useState<string | undefined>();
@@ -40,6 +44,9 @@ export default function ForgotPasswordPage() {
     yup.object().shape({
       email: yup.string().email().required("Email Requis."),
     }),
+    {
+      email: pendingEmail ?? "",
+    },
   );
   const [loading, setLoading] = useState(false);
 
@@ -54,7 +61,9 @@ export default function ForgotPasswordPage() {
     setGlobalError(undefined);
     try {
       // → POST /auth/otp/send
-      await pause(2000);
+      await resetPassword({ email: form.data.email });
+      await pause(500);
+
       setPageState("sent");
     } catch {
       setGlobalError(

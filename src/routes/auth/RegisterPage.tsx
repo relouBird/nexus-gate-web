@@ -21,68 +21,12 @@ import {
   UserMultiple4,
 } from "@tailgrids/icons";
 
-// ─── Types ────────────────────────────────────────────────────
-
-interface FormState {
-  teamName: string;
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface FormErrors {
-  teamName?: string;
-  username?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  global?: string;
-}
-
-// ─── Validation ───────────────────────────────────────────────
-
-function validate(form: FormState, step: 1 | 2): FormErrors {
-  const errors: FormErrors = {};
-
-  if (step === 1) {
-    if (!form.teamName.trim()) {
-      errors.teamName = "Le nom d'équipe est requis.";
-    } else if (form.teamName.trim().length < 2) {
-      errors.teamName = "Minimum 2 caractères.";
-    }
-
-    if (!form.username.trim()) {
-      errors.username = "Le nom d'utilisateur est requis.";
-    } else if (form.username.trim().length < 2) {
-      errors.username = "Minimum 2 caractères.";
-    } else if (!/^[a-zA-Z0-9_.-]+$/.test(form.username)) {
-      errors.username = "Lettres, chiffres, _ . - uniquement.";
-    }
-  }
-
-  if (step === 2) {
-    if (!form.email.trim()) {
-      errors.email = "L'adresse email est requise.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errors.email = "Format d'email invalide.";
-    }
-
-    if (!form.password) {
-      errors.password = "Le mot de passe est requis.";
-    } else if (form.password.length < 8) {
-      errors.password = "Minimum 8 caractères.";
-    }
-
-    if (!form.confirmPassword) {
-      errors.confirmPassword = "Confirmez votre mot de passe.";
-    } else if (form.password !== form.confirmPassword) {
-      errors.confirmPassword = "Les mots de passe ne correspondent pas.";
-    }
-  }
-
-  return errors;
-}
+// Formulaires
+import useForm from "@/composables/useForm";
+import * as yup from "yup";
+import { useAuthStore } from "@/stores/auth.store";
+import { useStore } from "zustand";
+import type { AxiosResponse } from "axios";
 
 // ─── Page ─────────────────────────────────────────────────────
 
@@ -93,93 +37,101 @@ export default function RegisterPage() {
     forcePrefix: true,
   });
 
+  // La store
+  const { pendingEmail, register: registerTeam } = useStore(useAuthStore);
+
+  // 🔹 Créer un formulaire réactif
+  const formStep1 = useForm(
+    // Schéma de validation Yup
+    yup.object().shape({
+      username: yup
+        .string()
+        .min(6, "Votre nom d'utilisateur doit avoir au moins 6 caractères")
+        .matches(/^\S*$/, "Les espaces ne sont pas autorisés")
+        .required("Nom d'utilisateur requis."),
+      teamName: yup
+        .string()
+        .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+        .required("Le mot de passe est requis."),
+    }),
+  );
+
+  // 🔹 Créer un formulaire réactif
+  const formStep2 = useForm(
+    // Schéma de validation Yup
+    yup.object().shape({
+      email: yup.string().email().required("Email Requis."),
+      password: yup
+        .string()
+        .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+        .matches(
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          "Le mot de passe doit contenir des chiffres et des lettres et un caractère spécial.",
+        )
+        .required("Le mot de passe est requis."),
+      confirmPassword: yup
+        .string()
+        .oneOf([yup.ref("password")], "Les mots de passe ne correspondent pas.")
+        .required("Veuillez confirmer votre mot de passe."),
+    }),
+    {
+      email: pendingEmail ?? "",
+    },
+  );
+
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
-  const [form, setForm] = useState<FormState>({
-    teamName: "",
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [globalError, setGlobalError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  const [touched, setTouched] = useState<
-    Partial<Record<keyof FormState, boolean>>
-  >({});
-
-  function handleChange(field: keyof FormState, value: string) {
-    const next = { ...form, [field]: value };
-    setForm(next);
-    if (touched[field]) {
-      const nextErrors = validate(next, step);
-      setErrors((prev) => ({
-        ...prev,
-        [field]: nextErrors[field],
-        global: undefined,
-      }));
-    }
-  }
-
-  function handleBlur(field: keyof FormState) {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-    const nextErrors = validate(form, step);
-    setErrors((prev) => ({ ...prev, [field]: nextErrors[field] }));
-  }
 
   // Étape 1 → 2
-  function handleNextStep(e: FormEvent) {
+  async function handleNextStep(e: FormEvent) {
     e.preventDefault();
-    setTouched({ teamName: true, username: true });
-    const stepErrors = validate(form, 1);
-    if (Object.keys(stepErrors).length > 0) {
-      setErrors(stepErrors);
+
+    const isValid = await formStep1.validate();
+
+    if (!isValid) {
       return;
     }
-    setErrors({});
+
     setStep(2);
   }
 
   // Soumission finale
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setTouched({
-      email: true,
-      password: true,
-      confirmPassword: true,
-    });
-    const stepErrors = validate(form, 2);
-    if (Object.keys(stepErrors).length > 0) {
-      setErrors(stepErrors);
+
+    const isValid = await formStep2.validate();
+
+    if (!isValid) {
       return;
     }
 
     setLoading(true);
-    setErrors({});
 
     try {
-      // TODO : remplacer par authClient.register({
-      //   teamName: form.teamName,
-      //   username: form.username,
-      //   email: form.email,
-      //   password: form.password,
-      // })
-      // → POST /auth/team/register
-      await pause(2500);
-      navigate("/auth/login");
-    } catch {
-      setErrors({
-        global:
-          "Une erreur est survenue lors de la création du compte. Réessayez.",
+      await pause(1000);
+      const res = await registerTeam({
+        ...formStep1.data,
+        ...formStep2.data,
       });
+      if (res?.status == 200 || res?.status == 201) {
+        navigate("/auth/verification");
+      }
+    } catch (error) {
+      const response = error as AxiosResponse;
+      setGlobalError(
+        response.data?.message ??
+          "Une erreur est survenue lors de la création du compte. Réessayez.",
+      );
     } finally {
       setLoading(false);
     }
   }
 
   // Slug preview : ce que le backend va générer
-  const teamSlug = form.teamName
-    .toLowerCase()
+  const teamSlug = formStep1.data.teamName
+    ?.toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
@@ -199,13 +151,13 @@ export default function RegisterPage() {
       <StepIndicator current={step} />
 
       {/* ── Erreur globale ── */}
-      {errors.global && (
+      {globalError && (
         <div
           role="alert"
           className="flex items-start gap-2.5 rounded-xl border border-error-200 bg-error-50 px-4 py-3"
         >
           <ErrorCircle1 className="w-5 h-5 text-error-500" />
-          <p className="text-sm text-error-600">{errors.global}</p>
+          <p className="text-sm text-error-600">{globalError}</p>
         </div>
       )}
 
@@ -220,7 +172,7 @@ export default function RegisterPage() {
             <Field
               label="Nom de l'équipe"
               htmlFor="teamName"
-              error={errors.teamName}
+              error={formStep1.errors.teamName?.toLocaleString()}
             >
               <AuthInput
                 id="teamName"
@@ -228,10 +180,13 @@ export default function RegisterPage() {
                 name="teamName"
                 placeholder="ex: TechCorp"
                 autoComplete="organization"
-                value={form.teamName}
-                onChange={(e) => handleChange("teamName", e.target.value)}
-                onBlur={() => handleBlur("teamName")}
-                hasError={!!errors.teamName}
+                value={formStep1.data.teamName}
+                onChange={(e) => {
+                  setGlobalError(undefined);
+                  formStep1.setData("teamName", e.target.value);
+                }}
+                onBlur={() => formStep1.validateField("teamName")}
+                hasError={!!formStep1.errors.teamName}
                 leftIcon={<UserMultiple4 className="w-5 h-5" />}
               />
               {/* Slug preview */}
@@ -249,7 +204,7 @@ export default function RegisterPage() {
             <Field
               label="Nom d'utilisateur"
               htmlFor="username"
-              error={errors.username}
+              error={formStep1.errors.username?.toLocaleString()}
             >
               <AuthInput
                 id="username"
@@ -257,10 +212,13 @@ export default function RegisterPage() {
                 name="username"
                 placeholder="ex: alice_martin"
                 autoComplete="username"
-                value={form.username}
-                onChange={(e) => handleChange("username", e.target.value)}
-                onBlur={() => handleBlur("username")}
-                hasError={!!errors.username}
+                value={formStep1.data.username}
+                onChange={(e) => {
+                  setGlobalError(undefined);
+                  formStep1.setData("username", e.target.value);
+                }}
+                onBlur={() => formStep1.validateField("username")}
+                hasError={!!formStep1.errors.username}
                 leftIcon={<User2 className="w-5 h-5" />}
               />
             </Field>
@@ -283,17 +241,21 @@ export default function RegisterPage() {
           className="flex flex-col gap-5"
         >
           <div className="flex flex-col gap-4">
-            <Field label="Adresse email" htmlFor="email" error={errors.email}>
+            <Field
+              label="Adresse email"
+              htmlFor="email"
+              error={formStep2.errors.email?.toLocaleString()}
+            >
               <AuthInput
                 id="email"
                 type="email"
                 name="email"
                 placeholder="alice@techcorp.com"
                 autoComplete="email"
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                onBlur={() => handleBlur("email")}
-                hasError={!!errors.email}
+                value={formStep2.data.email}
+                onChange={(e) => formStep2.setData("email", e.target.value)}
+                onBlur={() => formStep2.validateField("email")}
+                hasError={!!formStep2.errors.email}
                 leftIcon={<Envelope1 className="w-5 h-5" />}
               />
             </Field>
@@ -301,37 +263,41 @@ export default function RegisterPage() {
             <Field
               label="Mot de passe"
               htmlFor="password"
-              error={errors.password}
+              error={formStep2.errors.password?.toLocaleString()}
             >
               <PasswordInput
                 id="password"
                 name="password"
                 placeholder="Minimum 8 caractères"
                 autoComplete="new-password"
-                value={form.password}
-                onChange={(e) => handleChange("password", e.target.value)}
-                onBlur={() => handleBlur("password")}
-                hasError={!!errors.password}
+                value={formStep2.data.password}
+                onChange={(e) => {
+                  setGlobalError(undefined);
+                  formStep2.setData("password", e.target.value);
+                }}
+                onBlur={() => formStep2.validateField("password")}
+                hasError={!!formStep2.errors.password}
               />
-              <PasswordStrength password={form.password} />
+              <PasswordStrength password={formStep2.data.password} />
             </Field>
 
             <Field
               label="Confirmer le mot de passe"
               htmlFor="confirmPassword"
-              error={errors.confirmPassword}
+              error={formStep2.errors.confirmPassword?.toLocaleString()}
             >
               <PasswordInput
                 id="confirmPassword"
                 name="confirmPassword"
                 placeholder="Répétez le mot de passe"
                 autoComplete="new-password"
-                value={form.confirmPassword}
-                onChange={(e) =>
-                  handleChange("confirmPassword", e.target.value)
-                }
-                onBlur={() => handleBlur("confirmPassword")}
-                hasError={!!errors.confirmPassword}
+                value={formStep2.data.confirmPassword}
+                onChange={(e) => {
+                  setGlobalError(undefined);
+                  formStep2.setData("confirmPassword", e.target.value);
+                }}
+                onBlur={() => formStep2.validateField("confirmPassword")}
+                hasError={!!formStep2.errors.confirmPassword}
               />
             </Field>
           </div>
@@ -360,9 +326,12 @@ export default function RegisterPage() {
               />
             </svg>
             <p className="text-xs text-primary-700">
-              Équipe <span className="font-semibold">{form.teamName}</span>
+              Équipe{" "}
+              <span className="font-semibold">{formStep1.data.teamName}</span>
               {" · "}Compte CREATOR pour{" "}
-              <span className="font-semibold font-mono">{form.username}</span>
+              <span className="font-semibold font-mono">
+                {formStep1.data.username}
+              </span>
             </p>
             <button
               type="button"
@@ -384,7 +353,7 @@ export default function RegisterPage() {
               type="button"
               onClick={() => setStep(1)}
               disabled={loading}
-              className="w-full flex justify-center items-center gap-1.5 text-sm text-foreground-soft-500 hover:text-title-50 transition-colors disabled:opacity-40 py-1"
+              className="w-full flex justify-center items-center gap-1.5 text-sm text-foreground-soft-500 hover:text-title-50 transition-colors disabled:opacity-40 py-1 outline-none focus:outline-none"
             >
               <ChevronLeft className="w-4 h-4" /> Retour
             </button>
