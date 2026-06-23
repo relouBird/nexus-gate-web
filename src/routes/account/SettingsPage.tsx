@@ -7,64 +7,35 @@ import { useEffect, useState } from "react";
 import { cn } from "@/utils/cn";
 import { dateFormat } from "@/helpers";
 
-import { AuthInput, Field } from "@/components/auth/AuthFormparts";
+import { AuthInput } from "@/components/auth/AuthFormparts";
 import PasswordChangeForm from "@/components/account/PasswordChangeForm";
 import UsernameChangeForm from "@/components/account/UsernameChangeForm";
 import { useStore } from "zustand";
 import { useMeStore } from "@/stores/me.store";
 import { useNotify } from "@/helpers/notifications.helper";
 import { useNavigate } from "react-router";
+import { FieldGroup, SectionCard } from "@/components/account/UtilsParam";
 
 // ─── Types calés sur Prisma ───────────────────────────────────
 
 type UserRole = "CREATOR" | "ADMIN" | "CLIENT";
 
-interface FieldProps {
-  label: string;
-  htmlFor: string;
-  error?: string;
-  children: React.ReactNode;
-}
-
 // ─── Helpers ──────────────────────────────────────────────────
 
 const roleLabel: Record<UserRole, { label: string; color: string }> = {
-  CREATOR: { label: "Créateur", color: "bg-purple-50 text-purple-700 border border-purple-200" },
-  ADMIN: { label: "Administrateur", color: "bg-blue-50 text-blue-700 border border-blue-200" },
-  CLIENT: { label: "Client", color: "bg-gray-100 text-gray-600 border border-gray-200" },
+  CREATOR: {
+    label: "Créateur",
+    color: "bg-purple-50 text-purple-700 border border-purple-200",
+  },
+  ADMIN: {
+    label: "Administrateur",
+    color: "bg-blue-50 text-blue-700 border border-blue-200",
+  },
+  CLIENT: {
+    label: "Client",
+    color: "bg-gray-100 text-gray-600 border border-gray-200",
+  },
 };
-
-// ─── Sous-composants ──────────────────────────────────────────
-
-function SectionCard({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="bg-white border w-full border-slate-200 rounded-xl overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-50">
-        <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
-        {description && (
-          <p className="text-xs text-gray-400 mt-0.5">{description}</p>
-        )}
-      </div>
-      <div className="px-5 py-5">{children}</div>
-    </div>
-  );
-}
-
-function FieldGroup({ label, htmlFor, error, children }: FieldProps) {
-  return (
-    <Field label={label} htmlFor={htmlFor} error={error} small>
-      {children}
-    </Field>
-  );
-}
 
 // ─── Page ─────────────────────────────────────────────────────
 
@@ -166,33 +137,35 @@ export default function SettingsPage() {
               </SectionCard>
 
               {/* ── Zone de danger ── */}
-              <div className="border border-red-200 rounded-xl overflow-hidden">
-                <div className="px-5 py-4 border-b border-red-100 bg-red-50/50">
-                  <h2 className="text-sm font-semibold text-red-700">
-                    Zone de danger
-                  </h2>
-                  <p className="text-xs text-red-400 mt-0.5">
-                    Ces actions sont irréversibles
-                  </p>
-                </div>
-                <div className="px-5 py-5 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">
-                      Supprimer mon compte
-                    </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      Votre compte et toutes vos données seront définitivement
-                      supprimés.
+              {user.role != "CREATOR" && (
+                <div className="border border-red-200 rounded-xl overflow-hidden">
+                  <div className="px-5 py-4 border-b border-red-100 bg-red-50/50">
+                    <h2 className="text-sm font-semibold text-red-700">
+                      Zone de danger
+                    </h2>
+                    <p className="text-xs text-red-400 mt-0.5">
+                      Ces actions sont irréversibles
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    className="px-3 py-2 rounded-xl border border-red-200 text-red-500 text-xs font-semibold hover:bg-red-50 transition-colors"
-                  >
-                    Supprimer
-                  </button>
+                  <div className="px-5 py-5 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">
+                        Supprimer mon compte
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        Votre compte et toutes vos données seront définitivement
+                        supprimés.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="px-3 py-2 rounded-xl border border-red-200 text-red-500 text-xs font-semibold hover:bg-red-50 transition-colors"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}

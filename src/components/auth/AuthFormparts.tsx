@@ -56,6 +56,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   readOnly?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  mono?: boolean;
 }
 
 export function AuthInput({
@@ -63,6 +64,7 @@ export function AuthInput({
   readOnly,
   leftIcon,
   rightIcon,
+  mono,
   className,
   ...props
 }: InputProps) {
@@ -83,6 +85,7 @@ export function AuthInput({
           hasError
             ? "border-error-300 focus:border-error-400 focus:ring-error-200/40"
             : "border-slate-200 hover:border-base-200",
+          mono && "font-mono",
           readOnly
             ? "bg-gray-50 text-gray-400 cursor-default border-gray-100"
             : "bg-background-50 border-slate-200 hover:border-base-300",
@@ -149,18 +152,20 @@ export function PasswordInput({
 export function SubmitButton({
   loading,
   label,
+  disabled,
   loadingLabel,
   rightIcon,
 }: {
   loading: boolean;
   label: string;
+  disabled?: boolean;
   loadingLabel: string;
   rightIcon?: ReactNode;
 }) {
   return (
     <button
       type="submit"
-      disabled={loading}
+      disabled={loading || disabled}
       className={cn(
         "w-full rounded-xl px-4 py-2.5 text-sm font-semibold text-white",
         "bg-primary-500 hover:bg-primary-600 active:bg-primary-700",

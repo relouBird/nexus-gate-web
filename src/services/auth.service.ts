@@ -11,24 +11,34 @@ import type {
   VerifyOtpPayload,
   ResetPasswordPayload,
   ChangePasswordPayload,
+  UpdateTeamPayload,
+  UpdateTeamResponse,
 } from "@/types/auth.type";
 
 // ─── Interface du service ────────────────────────────────────
 
 export interface AuthServiceProps {
   login: (payload: LoginPayload) => Promise<AxiosResponse<LoginResponse>>;
-  register: (payload: RegisterPayload) => Promise<AxiosResponse<RegisterResponse>>;
+  register: (
+    payload: RegisterPayload,
+  ) => Promise<AxiosResponse<RegisterResponse>>;
+  updateTeam: (
+    payload: UpdateTeamPayload,
+  ) => Promise<AxiosResponse<UpdateTeamResponse>>;
   sendOtp: (payload: SendOtpPayload) => Promise<AxiosResponse<OtpResponse>>;
   verifyOtp: (payload: VerifyOtpPayload) => Promise<AxiosResponse<OtpResponse>>;
-  resetPassword: (payload: ResetPasswordPayload) => Promise<AxiosResponse<OtpResponse>>;
-  changePassword: (payload: ChangePasswordPayload) => Promise<AxiosResponse<OtpResponse>>;
+  resetPassword: (
+    payload: ResetPasswordPayload,
+  ) => Promise<AxiosResponse<OtpResponse>>;
+  changePassword: (
+    payload: ChangePasswordPayload,
+  ) => Promise<AxiosResponse<OtpResponse>>;
   logout: () => Promise<AxiosResponse>;
 }
 
 // ─── Service ─────────────────────────────────────────────────
 
 export default function authService(): AuthServiceProps {
-
   /**
    * POST /api/auth/login
    * { email, password } → { accessToken, user }
@@ -123,9 +133,23 @@ export default function authService(): AuthServiceProps {
     });
   };
 
+  /**
+   * PATCH /api/team
+   * Bearer token requis — mets à jour les informations de la team
+   */
+  const updateTeam = async (
+    payload: UpdateTeamPayload,
+  ): Promise<AxiosResponse<UpdateTeamResponse>> => {
+    return await request("/team/update", {
+      method: "post",
+      data: payload,
+    });
+  };
+
   return {
     login,
     register,
+    updateTeam,
     sendOtp,
     verifyOtp,
     resetPassword,

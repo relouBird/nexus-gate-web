@@ -12,6 +12,8 @@ import type {
   ChangePasswordPayload,
   LoginResponse,
   RegisterResponse,
+  UpdateTeamResponse,
+  UpdateTeamPayload,
 } from "@/types/auth.type";
 import type { NotifyFn } from "@/helpers/notifications.helper";
 import type { NavigateFunction } from "react-router";
@@ -33,6 +35,11 @@ type AuthStoreActions = {
   register: (
     payload: RegisterPayload,
   ) => Promise<AxiosResponse<RegisterResponse>>;
+  updateTeam: (
+    payload: UpdateTeamPayload,
+    navigate?: NavigateFunction,
+    notify?: NotifyFn,
+  ) => Promise<AxiosResponse<UpdateTeamResponse>>;
   login: (payload: LoginPayload, notify?: NotifyFn) => Promise<AxiosResponse>;
   sendOtp: (payload: SendOtpPayload) => Promise<AxiosResponse>;
   verifyOtp: (payload: VerifyOtpPayload) => Promise<AxiosResponse>;
@@ -221,6 +228,30 @@ export const useAuthStore = create<AuthStoreState & AuthStoreActions>()(
           if (navigate) {
             navigate("/auth/login");
           }
+        }
+      },
+
+      // ── Update Team ───────────────────────────────────────────
+      async updateTeam(payload, navigate, notify) {
+        try {
+          const service = authService();
+          const response = await service.updateTeam(payload);
+          return response;
+        } catch (error) {
+          const response = error as AxiosResponse;
+          notify?.({
+            message:
+              response.data?.message ?? "Impossible de mettre à jour l'equipe.",
+            color: "error",
+            visible: true,
+          });
+          if (response.status == 401) {
+            if (navigate) {
+              navigate("/auth/login");
+            }
+          }
+          console.error("Change password failed:", error);
+          throw error;
         }
       },
 
