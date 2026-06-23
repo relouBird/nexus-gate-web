@@ -17,6 +17,11 @@ export interface RegisterPayload {
   confirmPassword: string;
 }
 
+export interface UpdateTeamPayload {
+  teamName: string;
+  slug: string;
+}
+
 export interface SendOtpPayload {
   email: string;
   action: "login" | "reset";
@@ -46,6 +51,11 @@ export interface RegisterResponse {
   status: UserStatus;
   accessToken: string;
   refreshToken: string;
+}
+
+export interface UpdateTeamResponse {
+  team: TeamModel;
+  success: boolean;
 }
 
 export type LoginResponse = RegisterResponse;

@@ -44,6 +44,11 @@ export const NAV_ITEMS: NavItem[] = [
         path: "/team/users",
         icon: UserMultiple1,
       },
+      {
+        label: "Configuration",
+        path: "/team/configuration",
+        icon: Gear1,
+      },
     ],
   },
   {

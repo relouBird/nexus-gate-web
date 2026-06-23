@@ -25,6 +25,7 @@ import ForgotPasswordPage from "./routes/auth/ForgotPasswordPage";
 // Load les styles globaux
 import "./App.css";
 import DetailsServerPage from "./routes/network/DetailsServerPage";
+import TeamSettingsPage from "./routes/team/TeamSettings";
 
 function Build() {
   const { close, visible, message, color } = useStore(useNotificationStore);
@@ -54,11 +55,12 @@ function Build() {
             </Route>
             <Route path="team">
               <Route path="users" element={<UsersPage />} />
+              <Route path="configuration" element={<TeamSettingsPage />} />
             </Route>
             <Route path="account">
               <Route path="settings" element={<SettingsPage />} />
             </Route>
-            <Route path="/chats" element={<ChatsPage />} />
+            <Route path="chats" element={<ChatsPage />} />
           </Route>
           <Route path="auth" element={<LayoutAuth />}>
             <Route path="login" element={<LoginPage />} />

@@ -35,3 +35,12 @@ export function getStatusCodeColor(code: number): string {
   if (code < 500) return "text-orange-600";
   return "text-red-600";
 }
+
+export function toSlug(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
