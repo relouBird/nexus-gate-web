@@ -1,7 +1,11 @@
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { useAuthStore } from "@/stores/auth.store";
+import { useStore } from "zustand";
 
 // Topbar.tsx
 export function Topbar() {
+  const user = useStore(useAuthStore, (state) => state.user);
+
   return (
     <header className="fixed top-0 left-0 pl-64 right-0 z-48 w-full border-b border-base-200 bg-background-50/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -15,9 +19,14 @@ export function Topbar() {
           </button>
           <div>
             <p className="text-sm font-medium text-title-50 font-mono">
-              Relou Bird
+              {user?.username ?? ""}
             </p>
-            <p className="text-xs text-title-50/60">Admin</p>
+            <p className="text-xs text-title-50/60">
+              {user?.role
+                ? user.role[0].toLocaleUpperCase() +
+                  user.role.slice(1).toLocaleLowerCase()
+                : ""}
+            </p>
           </div>
         </div>
       </div>

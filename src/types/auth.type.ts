@@ -1,5 +1,7 @@
 // types/auth.type.ts
 
+import type { UserModel, TeamModel, UserStatus } from "./nexusgate.type";
+
 // ─── Payloads (requêtes) ──────────────────────────────────────
 
 export interface LoginPayload {
@@ -38,26 +40,10 @@ export interface ChangePasswordPayload {
 
 // ─── Réponses (API) ───────────────────────────────────────────
 
-export interface UserModel {
-  id: string;
-  username: string;
-  email: string;
-  role: "CREATOR" | "ADMIN" | "CLIENT";
-  teamId: string;
-}
-
-export interface TeamModel {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-}
-
 export interface RegisterResponse {
   user: UserModel;
   team: TeamModel;
-  status: AuthStatus;
+  status: UserStatus;
   accessToken: string;
   refreshToken: string;
 }
@@ -71,7 +57,3 @@ export interface OtpResponse {
 export interface SendOtpResponse {
   sent: string;
 }
-
-// ─── État de la store ─────────────────────────────────────────
-
-export type AuthStatus = "authenticated" | "unauthenticated";

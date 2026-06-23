@@ -4,8 +4,6 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import type { AxiosResponse } from "axios";
 import authService from "@/services/auth.service";
 import type {
-  UserModel,
-  AuthStatus,
   LoginPayload,
   RegisterPayload,
   SendOtpPayload,
@@ -16,13 +14,15 @@ import type {
   RegisterResponse,
 } from "@/types/auth.type";
 import type { NotifyFn } from "@/helpers/notifications.helper";
+import type { NavigateFunction } from "react-router";
+import type { UserModel, UserStatus } from "@/types/nexusgate.type";
 
 // ─── État ────────────────────────────────────────────────────
 
 type AuthStoreState = {
   user: UserModel | null;
   accessToken: string | null;
-  status: AuthStatus;
+  status: UserStatus;
   pendingEmail: string | null;
 };
 
@@ -38,7 +38,10 @@ type AuthStoreActions = {
   verifyOtp: (payload: VerifyOtpPayload) => Promise<AxiosResponse>;
   resetPassword: (payload: ResetPasswordPayload) => Promise<AxiosResponse>;
   changePassword: (payload: ChangePasswordPayload) => Promise<AxiosResponse>;
-  logout: (notify?: NotifyFn) => Promise<AxiosResponse>;
+  logout: (
+    notify?: NotifyFn,
+    navigate?: NavigateFunction,
+  ) => Promise<AxiosResponse>;
   setUser: (user: UserModel | null) => void;
   setAccessToken: (token: string | null) => void;
   setPendingEmail: (email: string | null) => void;
@@ -190,7 +193,7 @@ export const useAuthStore = create<AuthStoreState & AuthStoreActions>()(
       },
 
       // ── Logout ────────────────────────────────────────────────
-      logout: async (notify) => {
+      logout: async (notify, navigate) => {
         try {
           let response: AxiosResponse = {} as AxiosResponse;
           // On appelle l'API seulement si on a un token actif
@@ -215,6 +218,9 @@ export const useAuthStore = create<AuthStoreState & AuthStoreActions>()(
           throw error;
         } finally {
           set({ ...INITIAL_STATE, pendingEmail: get().user?.email });
+          if (navigate) {
+            navigate("/auth/login");
+          }
         }
       },
 

@@ -14,18 +14,24 @@ export function Field({
   label,
   htmlFor,
   error,
+  small = false,
   children,
 }: {
   label: string;
   htmlFor: string;
   error?: string;
+  small?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label
         htmlFor={htmlFor}
-        className="text-sm font-medium text-foreground-soft-500"
+        className={
+          small
+            ? "text-xs font-medium text-gray-500"
+            : "text-sm font-medium text-foreground-soft-500"
+        }
       >
         {label}
       </label>
@@ -47,12 +53,14 @@ export function Field({
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   hasError?: boolean;
+  readOnly?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
 }
 
 export function AuthInput({
   hasError,
+  readOnly,
   leftIcon,
   rightIcon,
   className,
@@ -67,7 +75,7 @@ export function AuthInput({
       )}
       <input
         className={cn(
-          "w-full rounded-xl border bg-background-50 px-3.5 py-2.5 text-sm text-title-50",
+          "w-full rounded-xl border  px-3.5 py-2.5 text-sm text-title-50",
           "placeholder:text-foreground-soft-500/40",
           "transition-colors duration-150",
           "focus:outline-none focus:ring-2 focus:ring-primary-300/40 focus:border-primary-400",
@@ -75,9 +83,13 @@ export function AuthInput({
           hasError
             ? "border-error-300 focus:border-error-400 focus:ring-error-200/40"
             : "border-slate-200 hover:border-base-200",
+          readOnly
+            ? "bg-gray-50 text-gray-400 cursor-default border-gray-100"
+            : "bg-background-50 border-slate-200 hover:border-base-300",
           leftIcon && "pl-9",
           className,
         )}
+        readOnly={readOnly}
         {...props}
       />
 
@@ -238,4 +250,22 @@ function getStrengthScore(pwd: string): number {
   if (/[0-9]/.test(pwd)) score++;
   if (/[^A-Za-z0-9]/.test(pwd)) score++;
   return score;
+}
+
+export function SuccessBadge({ message }: { message: string }) {
+  return (
+    <span className="flex items-center gap-1.5 text-xs text-green-600">
+      <svg viewBox="0 0 12 12" fill="none" className="w-3.5 h-3.5">
+        <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2" />
+        <path
+          d="M3.5 6l2 2L8.5 4.5"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      {message}
+    </span>
+  );
 }

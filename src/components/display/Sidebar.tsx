@@ -4,9 +4,31 @@ import { cn } from "@/utils/cn";
 import { NAV_ITEMS } from "@/constants/display/configuration.constant";
 import { DropListItem } from "@/components/ui/DropList";
 import { Exit } from "@tailgrids/icons";
+import { useStore } from "zustand";
+import { useAuthStore } from "@/stores/auth.store";
+import { pause } from "@/constants";
+import { useNotify } from "@/helpers/notifications.helper";
+import { useState } from "react";
+import { Spinner } from "../ui/Spinner";
 
 export function Sidebar() {
   const navigate = useNavigate();
+  const notify = useNotify();
+  const { logout } = useStore(useAuthStore);
+
+  const [loading, setLoading] = useState(false);
+
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      await pause(1000);
+      await logout(notify, navigate);
+    } catch (error) {
+      console.error("ERROR IS ====>", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <aside className="fixed left-0 top-0 z-50 h-screen w-64 border-r border-base-200 bg-background-50/95 backdrop-blur-sm">
       <div className="flex h-16 items-center gap-1.5 pl-4 pr-6 pt-2">
@@ -50,12 +72,17 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => {
-            navigate("/auth/login");
+            handleLogout();
           }}
           aria-label="Déconnexion"
           className="flex w-full font-mono items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-title-400 transition-all duration-200 border border-error-100 bg-error-50 text-error-500 hover:bg-error-50"
         >
-          <Exit className="size-5 shrink-0" />
+          {loading ? (
+            <Spinner className="size-4 shrink-0" />
+          ) : (
+            <Exit className="size-5 shrink-0" />
+          )}
+
           <span>Déconnexion</span>
         </button>
       </div>

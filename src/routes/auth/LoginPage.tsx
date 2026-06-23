@@ -58,7 +58,7 @@ export default function LoginPage() {
       if (!isValid) {
         return;
       }
-      await pause(1000);
+      await pause(500);
       // Simuler un appel API
       const res = await loginSession(formT.data);
       //   const res = await formT.submit(() => authStore.login(form.data));

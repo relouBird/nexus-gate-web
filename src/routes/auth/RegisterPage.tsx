@@ -154,7 +154,7 @@ export default function RegisterPage() {
       {globalError && (
         <div
           role="alert"
-          className="flex items-start gap-2.5 rounded-xl border border-error-200 bg-error-50 px-4 py-3"
+          className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-error-50 px-4 py-3"
         >
           <ErrorCircle1 className="w-5 h-5 text-error-500" />
           <p className="text-sm text-error-600">{globalError}</p>

@@ -2,7 +2,6 @@ import axios, { AxiosError, type AxiosResponse } from "axios";
 import { v4 as uuidv4 } from "uuid";
 import type { ErrorBackend } from "@/types/error.type";
 import { useAuthStore } from "@/stores/auth.store";
-import { useStore } from "zustand";
 import { extractErrorMessage } from "@/helpers";
 
 export default function axiosBuilder() {
@@ -41,8 +40,7 @@ export default function axiosBuilder() {
       !config.url?.includes("team/register") ||
       config.url?.includes("logout")
     ) {
-      const { accessToken } = useStore(useAuthStore);
-      // console.log("token =>", authStore.access_token?.slice(0, 10));
+      const accessToken = useAuthStore.getState().accessToken;
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
@@ -59,6 +57,9 @@ export default function axiosBuilder() {
       return response;
     },
     (error: AxiosError) => {
+      console.log("AXIOS ERROR =>", error);
+      console.log("RESPONSE =>", error.response);
+      console.log("REQUEST =>", error.request);
       const response = error.response as AxiosResponse;
       const message = extractErrorMessage(response);
 

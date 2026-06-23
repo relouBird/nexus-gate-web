@@ -4,6 +4,7 @@
 // ─── ENUMS ────────────────────────────────────────────────────
 
 export type UserRole = "CREATOR" | "ADMIN" | "CLIENT";
+export type UserStatus = "authenticated" | "unauthenticated";
 export type ServerType = "CLOUD" | "LOCAL";
 export type RuleType =
   | "IP_BLACKLIST"
@@ -129,13 +130,24 @@ export interface RequestLog {
   via: "cloud" | "tunnel";
 }
 
-export interface TeamMember {
+export interface UserModel {
   id: string;
   email: string;
+  username: string;
   role: UserRole;
+  status: UserStatus;
   teamId: string;
   createdAt: string;
-  initials: string; // calculé côté client
+  updatedAt: string;
+  initials?: string; // calculé côté client
+}
+
+export interface TeamModel {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 // ─── STATS DASHBOARD ──────────────────────────────────────────
