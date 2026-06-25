@@ -262,7 +262,7 @@ export const useAuthStore = create<AuthStoreState & AuthStoreActions>()(
       reset: () => set({ ...INITIAL_STATE }),
     }),
     {
-      name: "session-storage",
+      name: "auth-storage",
       storage: createJSONStorage(() => sessionStorage), // Uses sessionStorage instead
     },
   ),

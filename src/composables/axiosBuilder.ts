@@ -41,6 +41,7 @@ export default function axiosBuilder() {
       config.url?.includes("logout")
     ) {
       const accessToken = useAuthStore.getState().accessToken;
+      // console.log("ACCESS-TOKEN ===========>", accessToken);
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
@@ -62,6 +63,12 @@ export default function axiosBuilder() {
       console.log("REQUEST =>", error.request);
       const response = error.response as AxiosResponse;
       const message = extractErrorMessage(response);
+
+      const status = response?.status;
+
+      if (status === 401) {
+        useAuthStore.getState().reset();
+      }
 
       const requestId = response.config.headers["X-Request-Id"];
 

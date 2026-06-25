@@ -31,7 +31,7 @@ export default function TeamSettingsPage() {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-  const { user: me, team, getMe } = useStore(useMeStore);
+  const { user: me, team } = useStore(useMeStore);
   const { updateTeam } = useStore(useAuthStore);
 
   // Méthodes
@@ -60,7 +60,6 @@ export default function TeamSettingsPage() {
       setIsLoading(true);
       try {
         await pause(500);
-        await getMe(navigate, notify);
       } catch (error) {
         console.log("Failed to fetch team settings:", String(error));
       } finally {
@@ -68,7 +67,6 @@ export default function TeamSettingsPage() {
       }
     }
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isCreator = me?.role === "CREATOR";

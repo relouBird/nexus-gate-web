@@ -4,7 +4,11 @@
 // ─── ENUMS ────────────────────────────────────────────────────
 
 export type UserRole = "CREATOR" | "ADMIN" | "CLIENT";
-export type UserStatus = "authenticated" | "unauthenticated";
+export type UserStatus =
+  | "authenticated"
+  | "unauthenticated"
+  | "AUTHENTICATED"
+  | "UNAUTHENTICATED";
 export type ServerType = "CLOUD" | "LOCAL";
 export type RuleType =
   | "IP_BLACKLIST"
@@ -66,7 +70,7 @@ export const ServerStatusTypes = {
 
 export interface AccessPolicy {
   mode: "include" | "exclude";
-  userIds: string[];
+  serverIds: string[]; // ["*"] = tous
 }
 
 export interface TunnelSession {
@@ -86,7 +90,6 @@ export interface Server {
   teamId: string;
   status: ServerStatusType;
   requireToken: boolean;
-  accessPolicy: AccessPolicy;
   tunnelSession: TunnelSession | null;
   rulesCount: number;
   createdAt: string;
@@ -136,10 +139,14 @@ export interface UserModel {
   username: string;
   role: UserRole;
   status: UserStatus;
+  accessPolicy: AccessPolicy;
   teamId: string;
   createdAt: string;
   updatedAt: string;
+  deletedAt?: string | null;
   initials?: string; // calculé côté client
+
+  [key: string]: unknown; // Signature d'index
 }
 
 export interface TeamModel {
