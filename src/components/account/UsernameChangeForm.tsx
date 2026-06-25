@@ -12,13 +12,11 @@ import {
 import { useMeStore } from "@/stores/me.store";
 import { useStore } from "zustand";
 import { useAuthStore } from "@/stores/auth.store";
-import { useNavigate } from "react-router";
 import { useNotify } from "@/helpers/notifications.helper";
 
 // ─── Formulaire username ──────────────────────────────────────
 
 export default function UsernameChangeForm() {
-  const navigate = useNavigate();
   const notify = useNotify();
 
   const { changeUsername, user } = useStore(useMeStore);
@@ -58,7 +56,6 @@ export default function UsernameChangeForm() {
       const data = await changeUsername(
         { username: formTemplate.data.username },
         notify,
-        navigate,
       );
       setUser(data.data.user);
       setSuccess(true);

@@ -13,29 +13,8 @@ import UsernameChangeForm from "@/components/account/UsernameChangeForm";
 import { useStore } from "zustand";
 import { useMeStore } from "@/stores/me.store";
 import { useNotify } from "@/helpers/notifications.helper";
-import { useNavigate } from "react-router";
 import { FieldGroup, SectionCard } from "@/components/account/UtilsParam";
-
-// ─── Types calés sur Prisma ───────────────────────────────────
-
-type UserRole = "CREATOR" | "ADMIN" | "CLIENT";
-
-// ─── Helpers ──────────────────────────────────────────────────
-
-const roleLabel: Record<UserRole, { label: string; color: string }> = {
-  CREATOR: {
-    label: "Créateur",
-    color: "bg-purple-50 text-purple-700 border border-purple-200",
-  },
-  ADMIN: {
-    label: "Administrateur",
-    color: "bg-blue-50 text-blue-700 border border-blue-200",
-  },
-  CLIENT: {
-    label: "Client",
-    color: "bg-gray-100 text-gray-600 border border-gray-200",
-  },
-};
+import { roleLabel } from "@/helpers/user.helper";
 
 // ─── Page ─────────────────────────────────────────────────────
 
@@ -47,7 +26,6 @@ export default function SettingsPage() {
   });
 
   const notify = useNotify();
-  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
   const { user, team, getMe } = useStore(useMeStore);
@@ -57,7 +35,7 @@ export default function SettingsPage() {
       setIsLoading(true);
       try {
         await pause(500);
-        await getMe(navigate, notify);
+        await getMe(notify);
       } catch (error) {
         console.log("Failed to fetch settings:", String(error));
       } finally {

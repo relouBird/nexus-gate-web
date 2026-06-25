@@ -6,7 +6,6 @@ import {
   type GatewayToken,
   type Rule,
   type RequestLog,
-  type UserModel,
   type DashboardStats,
   ServerStatusTypes,
   ServerTypes,
@@ -24,7 +23,6 @@ export const MOCK_SERVERS: Server[] = [
     type: ServerTypes.CLOUD,
     teamId: "team-001",
     requireToken: true,
-    accessPolicy: { mode: "include", userIds: ["*"] },
     tunnelSession: null,
     rulesCount: 5,
     createdAt: "2025-01-15T08:00:00Z",
@@ -39,7 +37,6 @@ export const MOCK_SERVERS: Server[] = [
     type: ServerTypes.CLOUD,
     teamId: "team-001",
     requireToken: false,
-    accessPolicy: { mode: "include", userIds: ["usr-001", "usr-002"] },
     tunnelSession: null,
     rulesCount: 2,
     createdAt: "2025-02-10T09:00:00Z",
@@ -54,7 +51,6 @@ export const MOCK_SERVERS: Server[] = [
     status: ServerStatusTypes.ONLINE,
     teamId: "team-001",
     requireToken: true,
-    accessPolicy: { mode: "include", userIds: ["usr-001"] },
     tunnelSession: {
       id: "tun-001",
       serverId: "srv-003",
@@ -75,7 +71,6 @@ export const MOCK_SERVERS: Server[] = [
     status: ServerStatusTypes.OFFLINE,
     teamId: "team-001",
     requireToken: false,
-    accessPolicy: { mode: "exclude", userIds: ["*"] },
     tunnelSession: {
       id: "tun-002",
       serverId: "srv-004",
@@ -96,7 +91,6 @@ export const MOCK_SERVERS: Server[] = [
     status: ServerStatusTypes.OFFLINE,
     teamId: "team-001",
     requireToken: true,
-    accessPolicy: { mode: "include", userIds: ["*"] },
     tunnelSession: null,
     rulesCount: 8,
     createdAt: "2025-01-20T10:00:00Z",
@@ -372,65 +366,6 @@ export const MOCK_RECENT_LOGS: RequestLog[] = [
   },
 ];
 
-// ─── TEAM MEMBERS ─────────────────────────────────────────────
-
-export const MOCK_MEMBERS: UserModel[] = [
-  {
-    id: "usr-001",
-    email: "alice@techcorp.com",
-    username: "alice.carpenter",
-    role: "CREATOR",
-    status: "authenticated",
-    teamId: "team-001",
-    createdAt: "2025-01-01T00:00:00Z",
-    updatedAt: "2025-01-01T00:00:00Z",
-    initials: "AC",
-  },
-  {
-    id: "usr-002",
-    email: "bob.martin@techcorp.com",
-    username: "bob.martin",
-    role: "ADMIN",
-    status: "authenticated",
-    teamId: "team-001",
-    createdAt: "2025-01-15T09:00:00Z",
-    updatedAt: "2025-03-01T08:30:00Z",
-    initials: "BM",
-  },
-  {
-    id: "usr-003",
-    email: "carol.dev@techcorp.com",
-    username: "carol.dev",
-    role: "ADMIN",
-    status: "unauthenticated",
-    teamId: "team-001",
-    createdAt: "2025-02-01T10:00:00Z",
-    updatedAt: "2025-04-02T11:20:00Z",
-    initials: "CD",
-  },
-  {
-    id: "usr-004",
-    email: "dave.ops@techcorp.com",
-    username: "dave.ops",
-    role: "CLIENT",
-    status: "unauthenticated",
-    teamId: "team-001",
-    createdAt: "2025-03-10T08:00:00Z",
-    updatedAt: "2025-06-01T09:15:00Z",
-    initials: "DO",
-  },
-  {
-    id: "usr-005",
-    email: "eve.partner@external.com",
-    username: "eve.partner",
-    role: "CLIENT",
-    status: "unauthenticated",
-    teamId: "team-001",
-    createdAt: "2025-05-01T12:00:00Z",
-    updatedAt: "2025-05-10T12:00:00Z",
-    initials: "EP",
-  },
-];
 
 // ─── STATS PRÉ-CALCULÉES (simulées depuis RequestLog 24h) ─────
 
@@ -451,7 +386,7 @@ export const MOCK_DASHBOARD_STATS: DashboardStats = {
     active: MOCK_RULES.filter((r) => r.isActive).length,
   },
   members: {
-    total: MOCK_MEMBERS.length,
+    total: 12,
   },
   requests24h: {
     total: 12840,

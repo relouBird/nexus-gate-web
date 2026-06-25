@@ -25,19 +25,14 @@ type MeStoreState = {
 // ─── Actions ─────────────────────────────────────────────────
 
 type MeStoreActions = {
-  getMe: (
-    navigate?: NavigateFunction,
-    notify?: NotifyFn,
-  ) => Promise<AxiosResponse<MeResponse>>;
+  getMe: (notify?: NotifyFn) => Promise<AxiosResponse<MeResponse>>;
   changeUsername: (
     payload: ChangeUsernamePayload,
     notify?: NotifyFn,
-    navigate?: NavigateFunction,
   ) => Promise<AxiosResponse<ChangeUsernameResponse>>;
   changePassword: (
     payload: ChangePasswordPayload,
     notify?: NotifyFn,
-    navigate?: NavigateFunction,
   ) => Promise<AxiosResponse<ChangePasswordResponse>>;
   deleteAccount: (
     notify?: NotifyFn,
@@ -65,7 +60,7 @@ export const useMeStore = create<MeStoreState & MeStoreActions>()(
       ...INITIAL_STATE,
 
       // ── Register ─────────────────────────────────────────────
-      getMe: async (navigate, notify) => {
+      getMe: async (notify) => {
         try {
           const service = meService();
           const response = await service.getMe();
@@ -88,17 +83,12 @@ export const useMeStore = create<MeStoreState & MeStoreActions>()(
             color: "error",
             visible: true,
           });
-          if (response.status == 401) {
-            if (navigate) {
-              navigate("/auth/login");
-            }
-          }
           console.error("Register failed:", response);
           throw error;
         }
       },
       // ── Change Password  ──────────────────
-      changePassword: async (payload, notify, navigate) => {
+      changePassword: async (payload, notify) => {
         try {
           const service = meService();
           const response = await service.changePassword(payload);
@@ -120,18 +110,13 @@ export const useMeStore = create<MeStoreState & MeStoreActions>()(
             color: "error",
             visible: true,
           });
-          if (response.status == 401) {
-            if (navigate) {
-              navigate("/auth/login");
-            }
-          }
           console.error("Change password failed:", error);
           throw error;
         }
       },
 
       // ── Change Username  ──────────────────
-      changeUsername: async (payload, notify, navigate) => {
+      changeUsername: async (payload, notify) => {
         try {
           const service = meService();
           const response = await service.changeUsername(payload);
@@ -154,11 +139,6 @@ export const useMeStore = create<MeStoreState & MeStoreActions>()(
             color: "error",
             visible: true,
           });
-          if (response.status == 401) {
-            if (navigate) {
-              navigate("/auth/login");
-            }
-          }
           console.error("Change password failed:", error);
           throw error;
         }
@@ -186,7 +166,6 @@ export const useMeStore = create<MeStoreState & MeStoreActions>()(
 
           return response;
         } catch (error) {
-          const response = error as AxiosResponse;
           console.error("Change password failed:", error);
 
           notify?.({
@@ -194,11 +173,6 @@ export const useMeStore = create<MeStoreState & MeStoreActions>()(
             color: "error",
             visible: true,
           });
-          if (response.status == 401) {
-            if (navigate) {
-              navigate("/auth/login");
-            }
-          }
           throw error;
         }
       },
@@ -211,7 +185,7 @@ export const useMeStore = create<MeStoreState & MeStoreActions>()(
       setTeam: (team) => set({ team }),
     }),
     {
-      name: "session-storage",
+      name: "me-storage",
       storage: createJSONStorage(() => sessionStorage), // Uses sessionStorage instead
     },
   ),

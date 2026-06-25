@@ -6,7 +6,7 @@ import { cn } from "@/utils/cn";
 
 interface IndicatorMenuProps {
   onView: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
   onDelete: () => void;
   className?: string;
 }
@@ -48,6 +48,7 @@ export function IndicatorMenu({
       {open && (
         <div className="absolute right-0 top-full mt-1 w-36 rounded-xl border border-base-200 bg-background-50 shadow-md py-1 z-50 animate-in fade-in zoom-in-95 duration-100">
           <button
+            type="button"
             onClick={() => {
               onView();
               setOpen(false);
@@ -57,17 +58,21 @@ export function IndicatorMenu({
             <Eye className="size-3.5" />
             Voir
           </button>
+          {onEdit && (
+            <button
+              type="button"
+              onClick={() => {
+                onEdit();
+                setOpen(false);
+              }}
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground-soft-500 hover:bg-background-soft-100 hover:text-title-50 transition-colors"
+            >
+              <Pencil1 className="size-3.5" />
+              Modifier
+            </button>
+          )}
           <button
-            onClick={() => {
-              onEdit();
-              setOpen(false);
-            }}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground-soft-500 hover:bg-background-soft-100 hover:text-title-50 transition-colors"
-          >
-            <Pencil1 className="size-3.5" />
-            Modifier
-          </button>
-          <button
+            type="button"
             onClick={() => {
               onDelete();
               setOpen(false);

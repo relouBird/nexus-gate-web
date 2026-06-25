@@ -45,16 +45,17 @@ export function FilterBar({
     <div className="flex flex-col gap-4 mb-6">
       {/* Tabs */}
       {tabs && tabs.length > 0 && (
-        <div className="flex items-center gap-1 bg-background-soft-100 rounded-xl p-1 w-fit">
+        <div className="flex items-center gap-1 bg-background-soft-100 border border-slate-200 rounded-xl p-1 w-fit">
           {tabs.map((tab) => (
             <button
+              type="button"
               key={tab.value}
               onClick={() => onTabChange?.(tab.value)}
               className={cn(
-                "px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200",
+                "px-4 py-1.5 rounded-lg text-xs font-mono font-medium transition-all duration-200",
                 activeTab === tab.value
                   ? "bg-background-50 text-primary-500 shadow-xs"
-                  : "text-foreground-soft-500 hover:text-title-50",
+                  : "text-slate-600 hover:text-title-50",
               )}
             >
               {tab.label}
@@ -118,10 +119,11 @@ export function FilterBar({
             )}
           </div>
         </div>
-        
+
         {/* Toggle liste / grille */}
         <div className="flex items-center gap-1 bg-background-soft-100 rounded-xl p-1 mb-px">
           <button
+          
             onClick={() => {
               setViewMode(VIEW_MODE.LIST);
               setMode(VIEW_MODE.LIST);
