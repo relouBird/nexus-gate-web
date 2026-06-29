@@ -1,6 +1,8 @@
 import axios, { AxiosError, type AxiosResponse } from "axios";
 import { v4 as uuidv4 } from "uuid";
 import type { ErrorBackend } from "@/types/error.type";
+import { useAuthStore } from "@/stores/auth.store";
+import { extractErrorMessage } from "@/helpers";
 
 export default function axiosBuilder() {
   /**
@@ -33,6 +35,16 @@ export default function axiosBuilder() {
       delete config.headers["Content-Type"];
     }
 
+    if (
+      !config.url?.includes("auth") ||
+      !config.url?.includes("team/register") ||
+      config.url?.includes("logout")
+    ) {
+      const accessToken = useAuthStore.getState().accessToken;
+      // console.log("ACCESS-TOKEN ===========>", accessToken);
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
     console.log(`[${requestId}] api-request send -->`, config);
 
     return config;
@@ -46,18 +58,27 @@ export default function axiosBuilder() {
       return response;
     },
     (error: AxiosError) => {
+      console.log("AXIOS ERROR =>", error);
+      console.log("RESPONSE =>", error.response);
+      console.log("REQUEST =>", error.request);
       const response = error.response as AxiosResponse;
-      const errorParticularity = response.data as ErrorBackend;
+      const message = extractErrorMessage(response);
+
+      const status = response?.status;
+
+      if (status === 401) {
+        useAuthStore.getState().reset();
+      }
 
       const requestId = response.config.headers["X-Request-Id"];
 
       console.log(`[${requestId}] api-response-error  -->`, response);
-      console.log(
-        `[${requestId}] api-response-error  -->`,
-        errorParticularity.details,
-      );
+      console.log(`[${requestId}] api-response-error  -->`, message);
 
-      throw error.response;
+      throw {
+        ...error.response,
+        data: { message },
+      } as AxiosResponse<ErrorBackend>;
 
       //   return error;
     },

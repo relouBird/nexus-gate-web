@@ -4,6 +4,11 @@
 // ─── ENUMS ────────────────────────────────────────────────────
 
 export type UserRole = "CREATOR" | "ADMIN" | "CLIENT";
+export type UserStatus =
+  | "authenticated"
+  | "unauthenticated"
+  | "AUTHENTICATED"
+  | "UNAUTHENTICATED";
 export type ServerType = "CLOUD" | "LOCAL";
 export type RuleType =
   | "IP_BLACKLIST"
@@ -18,7 +23,7 @@ export type RuleType =
   | "REPUTATION_BLOCK";
 export type ActionType = "DENY" | "ALLOW" | "CHALLENGE" | "LOG" | "REDIRECT";
 
-export type StatusType = "ONLINE" | "OFFLINE" | "ERROR";
+export type ServerStatusType = "ONLINE" | "OFFLINE" | "TUNNEL" | "ERROR";
 
 // ─── ENUMERATION ─────────────────────────────────────────────
 
@@ -54,18 +59,24 @@ export const ActionTypes = {
   REDIRECT: "REDIRECT",
 } as const;
 
-export const StatusTypes = {
+export const ServerStatusTypes = {
   ONLINE: "ONLINE",
   OFFLINE: "OFFLINE",
+  TUNNEL: "TUNNEL",
   ERROR: "ERROR",
 } as const;
-
 
 // ─── MODELS ───────────────────────────────────────────────────
 
 export interface AccessPolicy {
   mode: "include" | "exclude";
-  userIds: string[];
+  serverIds: string[]; // ["*"] = tous
+}
+
+export interface ScopeToken {
+  gatewayTokenId: string;
+  serverId: string;
+  createdAt: string;
 }
 
 export interface TunnelSession {
@@ -83,9 +94,8 @@ export interface Server {
   url: string;
   type: ServerType;
   teamId: string;
-  status: StatusType;
+  status: ServerStatusType;
   requireToken: boolean;
-  accessPolicy: AccessPolicy;
   tunnelSession: TunnelSession | null;
   rulesCount: number;
   createdAt: string;
@@ -96,7 +106,7 @@ export interface GatewayToken {
   id: string;
   name: string;
   value: string;
-  scope: string; // "*" ou "id1,id2,..."
+  scope: ScopeToken[]; // "*" ou "id1,id2,..."
   userId: string;
   teamId: string;
   revoked: boolean;
@@ -129,13 +139,28 @@ export interface RequestLog {
   via: "cloud" | "tunnel";
 }
 
-export interface TeamMember {
+export interface UserModel {
   id: string;
   email: string;
+  username: string;
   role: UserRole;
+  status: UserStatus;
+  accessPolicy: AccessPolicy;
   teamId: string;
   createdAt: string;
-  initials: string; // calculé côté client
+  updatedAt: string;
+  deletedAt?: string | null;
+  initials?: string; // calculé côté client
+
+  [key: string]: unknown; // Signature d'index
+}
+
+export interface TeamModel {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 // ─── STATS DASHBOARD ──────────────────────────────────────────

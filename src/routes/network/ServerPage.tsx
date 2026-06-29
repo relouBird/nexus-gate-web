@@ -1,166 +1,25 @@
 // pages/ServersPage.tsx
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { useSeoHead } from "@/composables/useSeoHead";
 import { PageHeader } from "@/components/gen/PageHeader";
 import { Overlay } from "@/components/display/Overlay";
-import { useSeoHead } from "@/composables/useSeoHead";
 import { pause } from "@/constants";
-import { Globe2 } from "@tailgrids/icons";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import { MOCK_SERVERS } from "@/constants/display/mock.constant";
-import type { Server, ServerType } from "@/types/nexusgate.type";
-import { dateFormat } from "@/helpers";
-import ChevronRight from "@/components/icons/ChevronRight";
+import { ServerStatusTypes, type Server } from "@/types/nexusgate.type";
+import { getServerStatus } from "@/helpers/server.helper";
+
+// Les composants Icones
 import ServerIcon from "@/components/icons/ServerIcon";
-
-// ─── Helpers ──────────────────────────────────────────────────
-
-type ServerStatus = "online" | "tunnel" | "offline";
-
-function getServerStatus(server: Server): ServerStatus {
-  if (server.type === "CLOUD") return "online";
-  return server.tunnelSession?.isActive ? "tunnel" : "offline";
-}
-
-function timeSince(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 60) return `il y a ${minutes} min`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `il y a ${hours}h`;
-  return `il y a ${Math.floor(hours / 24)}j`;
-}
-
-// ─── Status badge ─────────────────────────────────────────────
-
-function StatusBadge({ status }: { status: ServerStatus }) {
-  const config = {
-    online: {
-      dot: "bg-emerald-400",
-      text: "text-emerald-700",
-      bg: "bg-emerald-50",
-      label: "En ligne",
-    },
-    tunnel: {
-      dot: "bg-amber-400",
-      text: "text-amber-700",
-      bg: "bg-amber-50",
-      label: "Tunnel actif",
-    },
-    offline: {
-      dot: "bg-gray-300",
-      text: "text-gray-500",
-      bg: "bg-gray-100",
-      label: "Hors ligne",
-    },
-  }[status];
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${config.bg} ${config.text}`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
-      {config.label}
-    </span>
-  );
-}
-
-function TypeBadge({ type }: { type: ServerType }) {
-  const config =
-    type === "CLOUD"
-      ? { bg: "bg-blue-50", text: "text-blue-600", label: "Cloud" }
-      : { bg: "bg-orange-50", text: "text-orange-600", label: "Local" };
-  return (
-    <span
-      className={`text-xs font-medium px-2 py-0.5 rounded ${config.bg} ${config.text}`}
-    >
-      {config.label}
-    </span>
-  );
-}
-
-// ─── Server card ──────────────────────────────────────────────
-
-function ServerCard({
-  server,
-  onClick,
-}: {
-  server: Server;
-  onClick: () => void;
-}) {
-  const status = getServerStatus(server);
-
-  return (
-    <button
-      onClick={onClick}
-      className="w-full text-left bg-white border border-slate-200 rounded-xl p-4 hover:border-indigo-200 hover:shadow-sm transition-all group flex flex-col gap-3"
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-              status === "offline"
-                ? "bg-gray-100 text-gray-400"
-                : status === "tunnel"
-                  ? "bg-amber-50 text-amber-500 group-hover:bg-amber-100"
-                  : "bg-indigo-50 text-indigo-400 group-hover:text-indigo-600 group-hover:bg-indigo-100"
-            }`}
-          >
-            <ServerIcon className="w-5 h-5" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-indigo-700 transition-colors">
-              {server.name}
-            </p>
-            <p className="text-xs text-gray-400 font-mono truncate">
-              {server.identifier}
-            </p>
-          </div>
-        </div>
-        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-400 transition-colors shrink-0 mt-0.5" />
-      </div>
-
-      {/* Badges */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <StatusBadge status={status} />
-        <TypeBadge type={server.type} />
-        {server.requireToken && (
-          <span className="text-xs font-medium px-2 py-0.5 rounded bg-purple-50 text-purple-600">
-            Token requis
-          </span>
-        )}
-      </div>
-
-      {/* Meta */}
-      <div className="flex items-center justify-between pt-1 border-t border-gray-50">
-        <div className="flex items-center gap-3 text-xs text-gray-400">
-          <span>
-            <span className="font-medium text-gray-600">
-              {server.rulesCount}
-            </span>{" "}
-            règle{server.rulesCount !== 1 ? "s" : ""}
-          </span>
-          {server.type === "LOCAL" && server.tunnelSession && (
-            <span>
-              Ping{" "}
-              <span className="font-medium text-gray-600">
-                {timeSince(server.tunnelSession.lastPingAt)}
-              </span>
-            </span>
-          )}
-          {server.type === "CLOUD" && server.url && (
-            <span className="truncate max-w-35 font-mono text-gray-300">
-              {server.url.replace(/^https?:\/\//, "")}
-            </span>
-          )}
-        </div>
-        <span className="text-xs text-gray-300">
-          {dateFormat(server.updatedAt, "DD/MM/YYYY")}
-        </span>
-      </div>
-    </button>
-  );
-}
+import { Globe2 } from "@tailgrids/icons";
+import EmptyState from "@/components/gen/EmptyState";
+import ServerCard from "@/components/network/ServerCard";
+import ServerProcessModal, {
+  type ServerProcessData,
+} from "@/components/network/ServerProcessModal";
+import { useMeStore } from "@/stores/me.store";
+import { useStore } from "zustand";
+import { useServerStore } from "@/stores/server.store";
+import { useNotify } from "@/helpers/notifications.helper";
 
 // ─── Filter bar ───────────────────────────────────────────────
 
@@ -250,33 +109,17 @@ function FilterBar({
   );
 }
 
-// ─── Empty state ──────────────────────────────────────────────
-
-function EmptyState({ hasFilters }: { hasFilters: boolean }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-300 mb-4">
-        <ServerIcon className="w-7 h-7" />
-      </div>
-      <p className="text-sm font-medium text-gray-600 mb-1">
-        {hasFilters ? "Aucun serveur ne correspond" : "Aucun serveur configuré"}
-      </p>
-      <p className="text-xs text-gray-400">
-        {hasFilters
-          ? "Essayez de modifier vos filtres."
-          : "Ajoutez votre premier serveur pour commencer."}
-      </p>
-    </div>
-  );
-}
-
 // ─── Stats summary bar ────────────────────────────────────────
 
 function SummaryBar({ servers }: { servers: Server[] }) {
-  const online = servers.filter((s) => getServerStatus(s) === "online").length;
-  const tunnel = servers.filter((s) => getServerStatus(s) === "tunnel").length;
+  const online = servers.filter(
+    (s) => getServerStatus(s) === ServerStatusTypes.ONLINE,
+  ).length;
+  const tunnel = servers.filter(
+    (s) => getServerStatus(s) === ServerStatusTypes.TUNNEL,
+  ).length;
   const offline = servers.filter(
-    (s) => getServerStatus(s) === "offline",
+    (s) => getServerStatus(s) === ServerStatusTypes.OFFLINE,
   ).length;
 
   return (
@@ -317,19 +160,30 @@ export default function ServerPage() {
     forcePrefix: true,
   });
 
+  const notify = useNotify();
+
+  // Stores
+  const { servers, getManyServer, createServer } = useStore(useServerStore);
+  const { user: me } = useStore(useMeStore);
+
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [servers, setServers] = useState<Server[]>([]);
   const [typeFilter, setTypeFilter] = useState<FilterType>("all");
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("all");
   const [search, setSearch] = useState("");
+
+  const canCreate = me?.role === "CREATOR" || me?.role === "ADMIN";
+
+  // Création server
+  const [showCreate, setShowCreate] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        await pause(2000);
-        setServers(MOCK_SERVERS);
+        await pause(500);
+        console.log("GET MANY SERVER CALLED");
+        await getManyServer(notify);
       } catch (error) {
         console.log("Failed to fetch servers:", String(error));
       } finally {
@@ -337,14 +191,17 @@ export default function ServerPage() {
       }
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = servers.filter((s) => {
     if (typeFilter !== "all" && s.type !== typeFilter) return false;
     if (statusFilter !== "all") {
       const status = getServerStatus(s);
-      if (statusFilter === "online" && status === "offline") return false;
-      if (statusFilter === "offline" && status !== "offline") return false;
+      if (statusFilter === "online" && status === ServerStatusTypes.OFFLINE)
+        return false;
+      if (statusFilter === "offline" && status !== ServerStatusTypes.OFFLINE)
+        return false;
     }
     if (
       search &&
@@ -355,6 +212,19 @@ export default function ServerPage() {
     return true;
   });
 
+  const handleCreated = useCallback(
+    async (u: ServerProcessData) => {
+      try {
+        console.log("DATA ====>", u.name);
+        await createServer(u, notify);
+      } catch (error) {
+        console.log("Votre Erreur est : ", error);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   const hasFilters =
     typeFilter !== "all" || statusFilter !== "all" || search !== "";
 
@@ -364,8 +234,9 @@ export default function ServerPage() {
         title="Serveurs"
         buttonName="Nouveau serveur"
         icon={Globe2}
+        disabled={!canCreate}
         description="Gérez les APIs enregistrées et surveillez leur statut en temps réel"
-        onView={() => console.log("Créer un serveur")}
+        onView={() => setShowCreate(true)}
       />
 
       <Overlay visible={isLoading} text="Chargement des serveurs...">
@@ -385,7 +256,14 @@ export default function ServerPage() {
 
           {/* Grid */}
           {filtered.length === 0 ? (
-            <EmptyState hasFilters={hasFilters} />
+            <EmptyState
+              message={
+                hasFilters
+                  ? "Aucun serveur ne correspond"
+                  : "Aucun serveur configuré"
+              }
+              icon={<ServerIcon className="w-7 h-7" />}
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {filtered.map((server) => (
@@ -399,6 +277,14 @@ export default function ServerPage() {
           )}
         </div>
       </Overlay>
+
+      {/* Modales */}
+      {showCreate && (
+        <ServerProcessModal
+          onClose={() => setShowCreate(false)}
+          onProcess={handleCreated}
+        />
+      )}
     </div>
   );
 }

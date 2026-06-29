@@ -145,6 +145,15 @@ export const dateFormat = (
   return new Intl.DateTimeFormat(locale, customOptions).format(d);
 };
 
+export function timeSince(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 60) return `il y a ${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `il y a ${hours}h`;
+  return `il y a ${Math.floor(hours / 24)}j`;
+}
+
 export function extractErrorMessage(error: unknown): string {
   const errorHandle: AxiosResponse = error as AxiosResponse;
   if (errorHandle.data) {
@@ -163,4 +172,18 @@ export function extractErrorMessage(error: unknown): string {
   }
   if (error instanceof Error) return error.message;
   return String(error);
+}
+
+export function maskEmail(email: string): string {
+  const [localPart, domain] = email.split("@");
+
+  if (!localPart || !domain) {
+    return email;
+  }
+
+  const visibleChars = Math.min(2, localPart.length);
+  const visiblePart = localPart.slice(0, visibleChars);
+  const maskedPart = "*".repeat(Math.max(0, localPart.length - visibleChars));
+
+  return `${visiblePart}${maskedPart}@${domain}`;
 }

@@ -1,6 +1,10 @@
-import { getServerStatus, getStatusLabel } from "@/helpers/server.helper";
-import { ServerTypes, type Server } from "@/types/nexusgate.type";
+import { getServerStatus } from "@/helpers/server.helper";
+import {
+  ServerTypes,
+  type Server,
+} from "@/types/nexusgate.type";
 import ServerIcon from "../icons/ServerIcon";
+import StatusBadge from "./StatusBadge";
 
 export default function ServerPreviewCard({
   server,
@@ -10,12 +14,6 @@ export default function ServerPreviewCard({
   onClick: () => void;
 }) {
   const status = getServerStatus(server);
-  const labelColor = {
-    online: "text-emerald-700 bg-emerald-50",
-    tunnel: "text-emerald-700 bg-emerald-50",
-    // tunnel: "text-amber-700 bg-amber-50",
-    offline: "text-gray-500 bg-gray-100",
-  }[status];
 
   return (
     <button
@@ -35,11 +33,7 @@ export default function ServerPreviewCard({
         </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <span
-          className={`text-xs font-medium px-2 py-0.5 rounded-full ${labelColor}`}
-        >
-          {getStatusLabel(server)}
-        </span>
+        <StatusBadge status={status} />
         <span
           className={`text-xs px-1.5 py-0.5 rounded font-medium ${
             server.type === ServerTypes.CLOUD

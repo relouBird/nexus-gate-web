@@ -12,7 +12,7 @@ export interface StatSecondaryCardProps {
 
 export default function StatSecondaryCard({
   icon,
-  iconColor = "gray",
+  iconColor = "bg-gray-50 text-gray-400",
   label,
   value,
   valueColor,
@@ -24,7 +24,7 @@ export default function StatSecondaryCard({
         <div
           className={cn(
             "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-            iconColor && `bg-${iconColor}-50 text-${iconColor}-400`,
+            iconColor && iconColor,
           )}
         >
           {icon}
@@ -34,7 +34,7 @@ export default function StatSecondaryCard({
           <p
             className={cn(
               "text-lg font-semibold ",
-              valueColor ? `text-${valueColor}-500`:'text-gray-800',
+              valueColor ? `text-${valueColor}-500` : "text-gray-800",
             )}
           >
             {value}

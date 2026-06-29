@@ -39,12 +39,13 @@ export function PageFilter<T extends Record<string, unknown>>({
   });
 
   useEffect(() => {
-    console.log("Données entrantes : ",entries);
+    console.log("Données entrantes : ", entries);
     setDatas(entries);
   }, [entries]);
 
   useEffect(() => {
     onChange(filtered);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, search]);
   return (
     <div className="flex justify-between items-end gap-3 mb-6">

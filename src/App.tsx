@@ -4,7 +4,8 @@ import { useNotificationStore } from "./stores/notification.store";
 import { useStore } from "zustand/react";
 
 // Load les composants utiles
-import { Layout } from "@/components/display/Layout";
+import { LayoutDefault } from "@/components/display/LayoutDefault";
+import { LayoutAuth } from "./components/display/LayoutAuth";
 import { Toast } from "@/components/ui/Toast";
 
 // Load les pages du routage
@@ -15,9 +16,16 @@ import TokensPage from "@/routes/network/TokensPage";
 import RulePage from "@/routes/network/RulePage";
 import UsersPage from "@/routes/team/UsersPage";
 import SettingsPage from "@/routes/account/SettingsPage";
+import LoginPage from "@/routes/auth/LoginPage";
+import RegisterPage from "@/routes/auth/RegisterPage";
+import OtpPage from "./routes/auth/OtpPage";
+import ResetPasswordPage from "./routes/auth/ResetPasswordPage";
+import ForgotPasswordPage from "./routes/auth/ForgotPasswordPage";
 
 // Load les styles globaux
 import "./App.css";
+import DetailsServerPage from "./routes/network/DetailsServerPage";
+import TeamSettingsPage from "./routes/team/TeamSettings";
 
 function Build() {
   const { close, visible, message, color } = useStore(useNotificationStore);
@@ -37,20 +45,29 @@ function Build() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route element={<Layout />}>
+          <Route element={<LayoutDefault />}>
             <Route index element={<DashboardPage />} />
             <Route path="network">
               <Route path="servers" element={<ServerPage />} />
+              <Route path="servers/:id" element={<DetailsServerPage />} />
               <Route path="tokens" element={<TokensPage />} />
               <Route path="rule" element={<RulePage />} />
             </Route>
             <Route path="team">
               <Route path="users" element={<UsersPage />} />
+              <Route path="configuration" element={<TeamSettingsPage />} />
             </Route>
             <Route path="account">
               <Route path="settings" element={<SettingsPage />} />
             </Route>
-            <Route path="/chats" element={<ChatsPage />} />
+            <Route path="chats" element={<ChatsPage />} />
+          </Route>
+          <Route path="auth" element={<LayoutAuth />}>
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="verification" element={<OtpPage />} />
+            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="reset-password" element={<ResetPasswordPage />} />
           </Route>
         </Routes>
 
