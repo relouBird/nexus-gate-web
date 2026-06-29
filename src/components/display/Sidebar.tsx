@@ -54,7 +54,7 @@ export function Sidebar() {
               end={item.path === "/"}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  "flex items-center px-3 py-2 rounded-lg text-sm font-medium focus:outline-none transition-colors",
                   isActive
                     ? "text-primary-500 bg-primary-50"
                     : "text-foreground-soft-500 hover:text-title-50 hover:bg-background-soft-100",

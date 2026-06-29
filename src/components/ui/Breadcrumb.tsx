@@ -1,19 +1,22 @@
 import { NAV_ITEMS } from "@/constants/display/configuration.constant";
 import type { IconType } from "@/types/configuration.type";
 import { useMemo } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 export function Breadcrumb() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const breadcrumb = useMemo(() => {
     let data: string[] = [];
+    let link: string = "";
     let icon: IconType | null = null;
     const path = location.pathname;
     for (const group of NAV_ITEMS) {
       for (const child of group.children ?? []) {
         if (child.path && path.startsWith(child.path ?? "/")) {
           data = [group.label, child.label];
+          link = `/${child.path}`;
           icon = child.icon ?? null;
         }
       }
@@ -21,6 +24,7 @@ export function Breadcrumb() {
     return {
       data,
       icon,
+      link,
     };
   }, [location.pathname]);
   return (
@@ -31,15 +35,17 @@ export function Breadcrumb() {
       >
         <ol className="inline-flex items-center space-x-1 md:space-x-3 rtl:space-x-reverse">
           <li className="inline-flex items-center">
-            <a
-              href="#"
+            <button
+              onClick={() => {
+                navigate(breadcrumb.link);
+              }}
               className="inline-flex items-center text-sm font-medium text-body hover:text-fg-brand"
             >
               {breadcrumb.icon && (
                 <breadcrumb.icon size={16} className="me-1.5" />
               )}
               <span className="font-mono">{breadcrumb.data[0]}</span>
-            </a>
+            </button>
           </li>
           <li aria-current="page">
             <div className="flex items-center space-x-1.5">
