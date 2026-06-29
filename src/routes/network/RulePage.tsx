@@ -1,8 +1,11 @@
+import AccessDenied from "@/components/account/AccessDenied";
 import { Overlay } from "@/components/display/Overlay";
 import { PageHeader } from "@/components/gen/PageHeader";
 import { useSeoHead } from "@/composables/useSeoHead";
 import { pause } from "@/constants";
+import { useMeStore } from "@/stores/me.store";
 import { useEffect, useState } from "react";
+import { useStore } from "zustand";
 
 export default function RulePage() {
   useSeoHead({
@@ -11,6 +14,10 @@ export default function RulePage() {
     forcePrefix: true,
   });
 
+  const { user: me } = useStore(useMeStore);
+
+  const canCreate = me?.role === "CREATOR" || me?.role === "ADMIN";
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -18,7 +25,7 @@ export default function RulePage() {
       setIsLoading(true);
       try {
         // Test en mettant une pause
-        await pause(3500);
+        await pause(1500);
       } catch (error) {
         console.log("Failed to fetch Datas:", String(error));
       } finally {
@@ -27,6 +34,19 @@ export default function RulePage() {
     }
     fetchData();
   }, []);
+
+
+  if (!canCreate) {
+    return (
+      <div>
+        <PageHeader
+          title="Utilisateurs"
+          description="Gérez les membres de votre équipe"
+        />
+        <AccessDenied allowedRoles={["CREATOR", "ADMIN"]} />
+      </div>
+    );
+  }
   return (
     <div>
       <PageHeader
@@ -36,10 +56,7 @@ export default function RulePage() {
         onView={() => console.log("View action triggered")}
       />
 
-      <Overlay
-        visible={isLoading}
-        text={"Chargement des filtres et règles..."}
-      >
+      <Overlay visible={isLoading} text={"Chargement des filtres et règles..."}>
         <h1>RulePage</h1>
       </Overlay>
     </div>

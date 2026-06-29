@@ -54,12 +54,6 @@ export function ServerInfoCard({ server }: { server: Server }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3 mt-1 border-t border-slate-100">
           {/* <MetaItem label="URL cible" value={server.url || "—"} mono /> */}
           <MetaItem
-            label="Politique d'accès"
-            value={
-              server.accessPolicy.mode === "include" ? "Inclusive" : "Exclusive"
-            }
-          />
-          <MetaItem
             label="Créé le"
             value={dateFormat(server.createdAt, "DD MMM YYYY")}
           />

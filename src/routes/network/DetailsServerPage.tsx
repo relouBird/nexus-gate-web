@@ -2,20 +2,29 @@
 import { Overlay } from "@/components/display/Overlay";
 import { PageHeader } from "@/components/gen/PageHeader";
 import { useSeoHead } from "@/composables/useSeoHead";
+import { useNotify } from "@/helpers/notifications.helper";
 import { pause } from "@/constants";
-import {
-  MOCK_SERVERS,
-  MOCK_RULES,
-  MOCK_RECENT_LOGS,
-} from "@/constants/display/mock.constant";
-import type { Server, Rule, RequestLog } from "@/types/nexusgate.type";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import type { Rule, RequestLog, Server } from "@/types/nexusgate.type";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { ServerInfoCard } from "@/components/network/ServerInfoCard";
 import RuleModal from "@/components/network/RuleModal";
 import LogTable from "@/components/network/LogTable";
 import RuleTable from "@/components/network/RuleTable";
 import { Gear1 } from "@tailgrids/icons";
+import { useStore } from "zustand";
+import { useUserStore } from "@/stores/user.store";
+import { useRuleStore } from "@/stores/rule.store";
+import { useServerStore } from "@/stores/server.store";
+import ServerProcessModal, {
+  type ServerProcessData,
+} from "@/components/network/ServerProcessModal";
+
+// Ajouter après les imports existants
+import RevokeConfirmModal from "@/components/network/RevokeConfirmModal";
+import GrantUsersModal from "@/components/network/GrantUsersModal";
+import TokenAuthConfirmModal from "@/components/network/TokenAuthConfirmModal";
+import ServerFastAction from "@/components/network/ServerFastAction";
 
 // ─── MAIN PAGE ─────────────────────────────────────────────────
 
@@ -28,33 +37,52 @@ export default function DetailsServerPage() {
     forcePrefix: true,
   });
 
+  const notify = useNotify();
+  const navigate = useNavigate();
+
+  // Stores
+  const { users, getManyUser } = useStore(useUserStore);
+  const {
+    server,
+    getServer,
+    updateServer,
+    revokeServer,
+    deleteServer,
+    tokenAuthServer,
+    grantServer,
+  } = useStore(useServerStore);
+  const { rules, getManyRule, createRule, updateRule, deleteRule } =
+    useStore(useRuleStore);
+
+  // Les differents loading
   const [isLoading, setIsLoading] = useState(false);
-  const [server, setServer] = useState<Server | null>(null);
-  const [rules, setRules] = useState<Rule[]>([]);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const [logs, setLogs] = useState<RequestLog[]>([]);
   const [showRuleModal, setShowRuleModal] = useState(false);
+
+  // Création server
+  const [showUpdate, setShowUpdate] = useState(false);
+
+  // Affichage des modals
+  // Ajouter après les autres useState
+  const [showRevokeModal, setShowRevokeModal] = useState(false);
+  const [showGrantModal, setShowGrantModal] = useState(false);
+  const [showTokenAuthModal, setShowTokenAuthModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        await pause(2000);
+        await pause(500);
         // Trouve le server par id (uuid) ou par index selon ton routing
-        const found =
-          MOCK_SERVERS.find((s) => s.id === id) ??
-          MOCK_SERVERS[Number(id)] ??
-          null;
-        setServer(found);
-        if (found) {
-          // Règles du server
-          const serverRules = MOCK_RULES.filter((r) => r.serverId === found.id);
-          setRules(serverRules);
-          // Logs du server
-          const serverLogs = MOCK_RECENT_LOGS.filter(
-            (l) => l.serverId === found.id,
-          );
-          setLogs(serverLogs);
-        }
+        console.log("GET ONE SERVER CALLED");
+        await getServer(String(id), notify);
+        await getManyRule(String(id), notify);
+        setLogs([]);
       } catch (error) {
         console.log("Failed to fetch server:", String(error));
       } finally {
@@ -62,23 +90,108 @@ export default function DetailsServerPage() {
       }
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  function handleToggleRule(ruleId: string) {
-    setRules((prev) =>
-      prev.map((r) => (r.id === ruleId ? { ...r, isActive: !r.isActive } : r)),
+  // ─── Mettre à jour un Serveur ───────────────────────────────
+  const handleupdated = useCallback(
+    async (u: ServerProcessData) => {
+      try {
+        console.log("DATA ====>", u.name);
+        await updateServer({ id: server?.id ?? "", ...u }, notify);
+      } catch (error) {
+        console.log("Votre Erreur est : ", error);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  // ─── Ajouter  une règle ───────────────────────────────────
+  async function handleAddRule(rule: Rule) {
+    const { id, createdAt, updatedAt, ...data } = rule;
+
+    try {
+      console.log("RULE DATA ====>", data);
+
+      setCreateLoading(true);
+
+      await pause(400);
+      await createRule(data, notify);
+    } catch (error) {
+      console.log("ERROR ===>", error);
+    } finally {
+      setCreateLoading(false);
+    }
+    console.log(`TO-IGNORE ====> ${createdAt}, ${updatedAt}, ${id}`);
+  }
+
+  // ─── Mettre à jour une règle ───────────────────────────────
+  async function handleToggleRule(ruleId: string) {
+    console.log("RULE ID ====>", ruleId);
+    const toUpdateRule = rules.find((r) => r.id == ruleId) as Rule;
+
+    try {
+      setUpdateLoading(true);
+
+      await pause(400);
+      await updateRule(
+        {
+          id: ruleId,
+          isActive: !toUpdateRule.isActive,
+        },
+        notify,
+      );
+    } catch (error) {
+      console.log("ERROR ===>", error);
+    } finally {
+      setUpdateLoading(false);
+    }
+  }
+
+  // ─── Supprimer une règle ───────────────────────────────────
+  async function handleDeleteRule(ruleId: string) {
+    console.log("RULE ID ====>", ruleId);
+
+    try {
+      setDeleteLoading(true);
+
+      await pause(800);
+      await deleteRule(ruleId, notify);
+    } catch (error) {
+      console.log("ERROR ===>", error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
+  // ─── Gérer le process Revoke ───────────────────────────────
+  async function handleRevoke() {
+    await revokeServer({ id: server?.id ?? "" }, notify);
+  }
+
+  // ─── Gérer le process de  Grant ────────────────────────────
+  async function handleGrant(userIds: string[]) {
+    await grantServer({ id: server?.id ?? "", userIds }, notify);
+  }
+
+  // ─── Gérer Token Auth ──────────────────────────────────────
+  async function handleTokenAuth(newValue: boolean) {
+    await tokenAuthServer(
+      { id: server?.id ?? "", requireToken: newValue },
+      notify,
     );
-    // TODO: PATCH /config/rules/:id { isActive }
   }
 
-  function handleDeleteRule(ruleId: string) {
-    setRules((prev) => prev.filter((r) => r.id !== ruleId));
-    // TODO: DELETE /config/rules/:id
-  }
-
-  function handleAddRule(rule: Rule) {
-    setRules((prev) => [rule, ...prev]);
-    // TODO: POST /config/servers/:id/rules
+  // ─── Handlers Delete Server ───────────────────────────────
+  async function handleDeleteServer() {
+    try {
+      await deleteServer(server?.id ?? "", notify);
+      // Rediriger après suppression
+      navigate("/network/servers");
+    } catch (error) {
+      console.log("ERROR ===>", error);
+    }
   }
 
   return (
@@ -86,33 +199,62 @@ export default function DetailsServerPage() {
       <PageHeader
         title={server ? `Serveur : ${server.name}` : `Serveur : ${id}`}
         description="Surveillez votre serveur et gérez ses règles de sécurité"
-        buttonName="Configuration Serveur"
+        buttonName="Mis à jour Serveur"
         icon={Gear1}
+        onView={() => setShowUpdate(true)}
       />
 
-      <Overlay visible={isLoading} text={`Chargement du serveur ${id}…`}>
+      <Overlay
+        visible={deleteLoading || updateLoading || createLoading || isLoading}
+        text={
+          createLoading
+            ? "Creation d'une règle"
+            : updateLoading
+              ? "Mis à jour de la règle"
+              : deleteLoading
+                ? "Suppression d'une règle"
+                : `Chargement du serveur ${id}…`
+        }
+        isDeleting={deleteLoading}
+      >
         {server && (
-          <div className="grid grid-cols-1 lg:grid-cols-9 gap-6 -mt-3">
-            {/* Infos server */}
-            <section className="lg:col-span-4">
-              <ServerInfoCard server={server} />
-            </section>
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-9 gap-6 -mt-3">
+              {/* Infos server */}
+              <section className="lg:col-span-4">
+                <ServerInfoCard server={server} />
+              </section>
 
-            {/* Règles */}
-            <section className="lg:col-span-5">
-              <RuleTable
-                rules={rules}
-                onToggle={handleToggleRule}
-                onDelete={handleDeleteRule}
-                onAdd={() => setShowRuleModal(true)}
-              />
-            </section>
+              {/* Règles */}
+              <section className="lg:col-span-5">
+                <RuleTable
+                  rules={rules}
+                  onToggle={handleToggleRule}
+                  onDelete={handleDeleteRule}
+                  onAdd={() => setShowRuleModal(true)}
+                />
+              </section>
 
-            {/* Logs */}
-            <section className="lg:col-span-9">
-              <LogTable logs={logs} />
-            </section>
-          </div>
+              <section className="lg:col-span-3">
+                {/* Actions rapides */}
+                <ServerFastAction
+                  server={server}
+                  setTokenAuth={() => setShowTokenAuthModal(true)}
+                  setRevoke={() => setShowRevokeModal(true)}
+                  setGrantUsers={() => {
+                    getManyUser();
+                    setShowGrantModal(true);
+                  }}
+                  setDeleteUser={() => setShowDeleteModal(true)}
+                />
+              </section>
+
+              {/* Logs */}
+              <section className="lg:col-span-6">
+                <LogTable logs={logs} />
+              </section>
+            </div>
+          </>
         )}
 
         {!server && !isLoading && (
@@ -135,6 +277,55 @@ export default function DetailsServerPage() {
           serverId={server.id}
           onClose={() => setShowRuleModal(false)}
           onSave={handleAddRule}
+        />
+      )}
+
+      {/* Modales */}
+      {showUpdate && (
+        <ServerProcessModal
+          server={server as Server}
+          onClose={() => setShowUpdate(false)}
+          onProcess={handleupdated}
+        />
+      )}
+
+      {/* Modale Token Auth */}
+      {showTokenAuthModal && server && (
+        <TokenAuthConfirmModal
+          serverName={server.name}
+          currentValue={server.requireToken}
+          onClose={() => setShowTokenAuthModal(false)}
+          onConfirmed={handleTokenAuth}
+        />
+      )}
+
+      {/* Modale Grant Users */}
+      {showGrantModal && server && (
+        <GrantUsersModal
+          server={server}
+          users={users}
+          currentUserIds={[]}
+          onClose={() => setShowGrantModal(false)}
+          onConfirmed={handleGrant}
+        />
+      )}
+
+      {/* Modale Revoke */}
+      {showRevokeModal && server && (
+        <RevokeConfirmModal
+          message="Retrait des droits aux utilisateurs"
+          server={server}
+          onClose={() => setShowRevokeModal(false)}
+          onConfirmed={handleRevoke}
+        />
+      )}
+
+      {/* Modale Delete Server - Réutilise RevokeConfirmModal */}
+      {showDeleteModal && server && (
+        <RevokeConfirmModal
+          server={server}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirmed={handleDeleteServer}
         />
       )}
     </div>

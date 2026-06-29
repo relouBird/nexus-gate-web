@@ -40,7 +40,11 @@ type AuthStoreActions = {
     navigate?: NavigateFunction,
     notify?: NotifyFn,
   ) => Promise<AxiosResponse<UpdateTeamResponse>>;
-  login: (payload: LoginPayload, notify?: NotifyFn) => Promise<AxiosResponse>;
+  login: (
+    payload: LoginPayload,
+    notify?: NotifyFn,
+    navigate?: NavigateFunction,
+  ) => Promise<AxiosResponse>;
   sendOtp: (payload: SendOtpPayload) => Promise<AxiosResponse>;
   verifyOtp: (payload: VerifyOtpPayload) => Promise<AxiosResponse>;
   resetPassword: (payload: ResetPasswordPayload) => Promise<AxiosResponse>;
@@ -97,7 +101,7 @@ export const useAuthStore = create<AuthStoreState & AuthStoreActions>()(
       },
 
       // ── Login ─────────────────────────────────────────────────
-      login: async (payload, notify) => {
+      login: async (payload, notify, navigate) => {
         try {
           const service = authService();
           const response: AxiosResponse<LoginResponse> =
@@ -129,6 +133,11 @@ export const useAuthStore = create<AuthStoreState & AuthStoreActions>()(
           }
           return response;
         } catch (error) {
+          const response = error as AxiosResponse;
+
+          if (response.status == 403 && navigate) {
+            navigate("/auth/verification");
+          }
           // Pas de token → OTP requis (le backend a envoyé l'OTP)
           set({
             status: "unauthenticated",
