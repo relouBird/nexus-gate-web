@@ -18,6 +18,7 @@ import { useUserStore } from "@/stores/user.store";
 import { useStore } from "zustand";
 import { useNotify } from "@/helpers/notifications.helper";
 import type { CreateUserPayload, UpdateUserPayload } from "@/types/user.type";
+import { useMeStore } from "@/stores/me.store";
 
 // ─── Page principale ──────────────────────────────────────────
 
@@ -32,32 +33,17 @@ export default function UsersPage() {
 
   const { users, getManyUser, createUser, updateUser, deleteUser } =
     useStore(useUserStore);
+  const { user: me } = useStore(useMeStore);
 
   const [isLoading, setIsLoading] = useState(false);
   const [servers, setServers] = useState<Server[]>([]);
-  const [viewerRole] = useState<UserRole>("CREATOR");
+  const [viewerRole] = useState<UserRole>(me?.role as UserRole);
   const [showCreate, setShowCreate] = useState(false);
   const [showView, setShowView] = useState<UserModel | null>(null);
   const [editUser, setEditUser] = useState<UserModel | null>(null);
   const [search, setSearch] = useState("");
 
   const [mode, setMode] = useState<VIEW_MODE>(VIEW_MODE.GRID);
-
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        await pause(500);
-        console.log("GET MANY USER CALLED");
-        await getManyUser(notify);
-        setServers(MOCK_SERVERS);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const canCreate = viewerRole === "CREATOR" || viewerRole === "ADMIN";
 
@@ -100,7 +86,25 @@ export default function UsersPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!canCreate && !isLoading) {
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      try {
+        await pause(500);
+        console.log("GET MANY USER CALLED");
+        await getManyUser(notify);
+        setServers(MOCK_SERVERS);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    if (canCreate) {
+      fetchData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!canCreate) {
     return (
       <div>
         <PageHeader
@@ -123,6 +127,7 @@ export default function UsersPage() {
       />
 
       <Overlay visible={isLoading} text="Chargement des utilisateurs...">
+        {}
         <div className="flex flex-col gap-4 mt-6">
           <ViewModeSwitcher
             label="Choisir le mode d'affichage :"

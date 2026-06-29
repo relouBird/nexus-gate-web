@@ -6,6 +6,7 @@ import type { UserModel, UserRole } from "@/types/nexusgate.type";
 import { cn } from "@/utils/cn";
 import { UserMultiple1, Pencil1 } from "@tailgrids/icons";
 import { IndicatorMenu } from "../display/Menu";
+import EmptyState from "./EmptyState";
 
 const STATUS_CFG = {
   authenticated: { dot: "bg-emerald-400", label: "Actif" },
@@ -257,12 +258,7 @@ export default function UsersTable({
 }) {
   if (users.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 py-16 text-center bg-white border border-slate-200 rounded-xl">
-        <div className="w-10 h-10 rounded-xl bg-gray-50 border border-slate-100 flex items-center justify-center text-gray-300">
-          <UserMultiple1 />
-        </div>
-        <p className="text-sm text-gray-500">Aucun utilisateur</p>
-      </div>
+      <EmptyState message="Aucun utilisateur trouvé" icon={<UserMultiple1 />} />
     );
   }
 

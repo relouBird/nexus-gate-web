@@ -38,7 +38,7 @@ export default function LoginPage() {
         .string()
         .min(8, "Le mot de passe doit contenir au moins 8 caractères")
         .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&\-_])[A-Za-z\d@$!%*?&\-_]+$/,
           "Le mot de passe doit contenir des chiffres et des lettres et un caractère spécial.",
         )
         .required("Mot de Passe Requis."),
@@ -60,7 +60,7 @@ export default function LoginPage() {
       }
       await pause(500);
       // Simuler un appel API
-      const res = await loginSession(formT.data);
+      const res = await loginSession(formT.data, undefined, navigate);
       //   const res = await formT.submit(() => authStore.login(form.data));
 
       if (res?.status == 200 || res?.status == 201) {
@@ -69,10 +69,6 @@ export default function LoginPage() {
 
       formT.clear();
       formT.data.password = "";
-
-      if (res?.status == 401) {
-        navigate("/auth/verification", { state: formT.data.email });
-      }
 
       console.log("Login:", formT.data);
     } catch (error) {

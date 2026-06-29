@@ -65,7 +65,7 @@ export default function RegisterPage() {
         .string()
         .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
         .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&\-_])[A-Za-z\d@$!%*?&\-_]+$/,
           "Le mot de passe doit contenir des chiffres et des lettres et un caractère spécial.",
         )
         .required("Le mot de passe est requis."),
