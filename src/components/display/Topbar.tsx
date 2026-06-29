@@ -14,8 +14,11 @@ export function Topbar() {
 
         {/* Avatar */}
         <div className="flex items-center gap-2 pl-1 pr-4 py-1.5 bg-background-soft-50 border cursor-pointer border-base-200 rounded-3xl">
-          <button className="relative rounded-full size-9 bg-primary-100 grid place-items-center text-primary-500 font-semibold text-sm hover:bg-primary-200 transition-colors">
-            RB
+          <button
+            type="button"
+            className="relative rounded-full size-9 bg-primary-100 grid place-items-center text-primary-500 font-semibold text-sm hover:bg-primary-200 transition-colors"
+          >
+            {user?.username.slice(0, 2).toLocaleUpperCase()}
           </button>
           <div>
             <p className="text-sm font-medium text-title-50 font-mono">

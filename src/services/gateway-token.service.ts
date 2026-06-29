@@ -29,7 +29,7 @@ export default function gatewayTokenService(): GatewayTokenServiceProps {
   const createToken = async (
     payload: CreateGatewayTokenPayload,
   ): Promise<AxiosResponse<CreateGatewayTokenResponse>> => {
-    return await request("/gateway-tokens", {
+    return await request("/configuration/gateway-tokens", {
       method: "post",
       data: payload,
     });
@@ -42,7 +42,7 @@ export default function gatewayTokenService(): GatewayTokenServiceProps {
   const getManyToken = async (): Promise<
     AxiosResponse<GetGatewayTokensResponse>
   > => {
-    return await request("/gateway-tokens", {
+    return await request("/configuration/gateway-tokens", {
       method: "get",
     });
   };
@@ -55,7 +55,7 @@ export default function gatewayTokenService(): GatewayTokenServiceProps {
     payload: RemoveGatewayTokenPayload,
   ): Promise<AxiosResponse<RemoveGatewayTokenResponse>> => {
     const { id } = payload;
-    return await request(`/gateway-tokens/${id}`, {
+    return await request(`/configuration/gateway-tokens/${id}`, {
       method: "delete",
     });
   };

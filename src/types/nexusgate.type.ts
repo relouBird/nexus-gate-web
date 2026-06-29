@@ -73,6 +73,12 @@ export interface AccessPolicy {
   serverIds: string[]; // ["*"] = tous
 }
 
+export interface ScopeToken {
+  gatewayTokenId: string;
+  serverId: string;
+  createdAt: string;
+}
+
 export interface TunnelSession {
   id: string;
   serverId: string;
@@ -100,7 +106,7 @@ export interface GatewayToken {
   id: string;
   name: string;
   value: string;
-  scope: string; // "*" ou "id1,id2,..."
+  scope: ScopeToken[]; // "*" ou "id1,id2,..."
   userId: string;
   teamId: string;
   revoked: boolean;

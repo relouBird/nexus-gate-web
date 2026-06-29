@@ -6,8 +6,6 @@ import { pause } from "@/constants";
 import { UserMultiple1 } from "@tailgrids/icons";
 import { useEffect, useState, useCallback } from "react";
 import type { UserModel, UserRole } from "@/types/nexusgate.type";
-import type { Server } from "@/types/nexusgate.type";
-import { MOCK_SERVERS } from "@/constants/display/mock.constant";
 import AccessDenied from "@/components/account/AccessDenied";
 
 import UserProcessModal from "@/components/account/UserProcessModal";
@@ -19,6 +17,7 @@ import { useStore } from "zustand";
 import { useNotify } from "@/helpers/notifications.helper";
 import type { CreateUserPayload, UpdateUserPayload } from "@/types/user.type";
 import { useMeStore } from "@/stores/me.store";
+import { useServerStore } from "@/stores/server.store";
 
 // ─── Page principale ──────────────────────────────────────────
 
@@ -33,10 +32,10 @@ export default function UsersPage() {
 
   const { users, getManyUser, createUser, updateUser, deleteUser } =
     useStore(useUserStore);
+  const { servers } = useStore(useServerStore);
   const { user: me } = useStore(useMeStore);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [servers, setServers] = useState<Server[]>([]);
   const [viewerRole] = useState<UserRole>(me?.role as UserRole);
   const [showCreate, setShowCreate] = useState(false);
   const [showView, setShowView] = useState<UserModel | null>(null);
@@ -93,7 +92,6 @@ export default function UsersPage() {
         await pause(500);
         console.log("GET MANY USER CALLED");
         await getManyUser(notify);
-        setServers(MOCK_SERVERS);
       } finally {
         setIsLoading(false);
       }
