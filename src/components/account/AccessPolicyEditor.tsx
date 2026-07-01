@@ -7,9 +7,11 @@ export default function AccessPolicyEditor({
   policy,
   servers,
   onChange,
+  isTokenProcess,
 }: {
   policy: AccessPolicy;
   servers: Server[];
+  isTokenProcess?: boolean;
   onChange: (p: AccessPolicy) => void;
 }) {
   const allSelected = policy.serverIds.includes("*");
@@ -54,26 +56,30 @@ export default function AccessPolicyEditor({
   return (
     <div className="flex flex-col gap-3">
       {/* Toggle mode */}
-      <div className="flex items-center gap-2">
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
-          {(["include", "exclude"] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => toggleMode(m)}
-              className={cn(
-                "px-3 py-1.5 text-xs font-medium rounded-md transition-colors capitalize",
-                policy.mode === m
-                  ? "bg-white text-gray-800 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700",
-              )}
-            >
-              {m === "include" ? "Inclure" : "Exclure"}
-            </button>
-          ))}
+      {!isTokenProcess && (
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
+            {(["include", "exclude"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => toggleMode(m)}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-medium rounded-md transition-colors capitalize",
+                  policy.mode === m
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700",
+                )}
+              >
+                {m === "include" ? "Inclure" : "Exclure"}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-gray-400">
+            {modeDescriptions[policy.mode]}
+          </p>
         </div>
-        <p className="text-xs text-gray-400">{modeDescriptions[policy.mode]}</p>
-      </div>
+      )}
 
       {/* Liste serveurs */}
       <div className="border border-gray-100 rounded-xl overflow-hidden">

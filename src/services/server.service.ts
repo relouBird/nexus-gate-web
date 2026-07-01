@@ -15,6 +15,8 @@ import type {
   TokenAuthServerPayload,
   RevokeServerPayload,
   GrantServerPayload,
+  SetServerHeaderPayload,
+  SetHeaderServerResponse,
 } from "@/types/server.type";
 
 // ─── Interface du service ────────────────────────────────────
@@ -31,6 +33,9 @@ export interface ServerServiceProps {
   tokenAuthServer: (
     payload: TokenAuthServerPayload,
   ) => Promise<AxiosResponse<TokenAuthServerResponse>>;
+  setServerHeader: (
+    payload: SetServerHeaderPayload,
+  ) => Promise<AxiosResponse<SetHeaderServerResponse>>;
   revokeServer: (
     payload: RevokeServerPayload,
   ) => Promise<AxiosResponse<RevokeServerResponse>>;
@@ -119,6 +124,20 @@ export default function serverService(): ServerServiceProps {
   };
 
   /**
+   * PATCH /configuration/servers/:id/token-auth
+   * { requireToken } → { server, message }
+   */
+  const setServerHeader = async (
+    payload: SetServerHeaderPayload,
+  ): Promise<AxiosResponse<SetHeaderServerResponse>> => {
+    const { id, ...restPayload } = payload;
+    return await request(`/configuration/servers/${id}/set-headers`, {
+      method: "patch",
+      data: restPayload,
+    });
+  };
+
+  /**
    * POST /configuration/servers/:id/revoke
    * { } → { message }
    */
@@ -152,6 +171,7 @@ export default function serverService(): ServerServiceProps {
     updateServer,
     deleteServer,
     tokenAuthServer,
+    setServerHeader,
     revokeServer,
     grantServer,
   };

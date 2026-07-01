@@ -95,6 +95,7 @@ export interface Server {
   type: ServerType;
   teamId: string;
   status: ServerStatusType;
+  headers: Record<string, string>;
   requireToken: boolean;
   tunnelSession: TunnelSession | null;
   rulesCount: number;

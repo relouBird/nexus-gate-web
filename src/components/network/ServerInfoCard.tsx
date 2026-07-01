@@ -18,7 +18,7 @@ export function ServerInfoCard({ server }: { server: Server }) {
           </h2>
         </div>
       </div>
-      <div className="bg-white border h-49.5 border-slate-200 rounded-xl p-5 flex flex-col gap-4">
+      <div className="bg-white border h-43.5 border-slate-200 rounded-xl p-5 flex flex-col gap-4">
         {/* Row 1 : nom + badges */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex flex-col gap-1">

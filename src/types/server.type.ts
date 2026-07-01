@@ -21,6 +21,11 @@ export interface TokenAuthServerPayload {
   requireToken: boolean;
 }
 
+export interface SetServerHeaderPayload {
+  id: string;
+  headers: Record<string, string>;
+}
+
 export interface RevokeServerPayload {
   id: string;
 }
@@ -62,6 +67,11 @@ export interface DeleteServerResponse {
 }
 
 export interface TokenAuthServerResponse {
+  server?: Server;
+  message?: string;
+}
+
+export interface SetHeaderServerResponse {
   server?: Server;
   message?: string;
 }

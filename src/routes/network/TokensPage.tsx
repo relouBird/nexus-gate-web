@@ -186,7 +186,7 @@ function TokenCard({
             {token.name}
           </h3>
           <p className="text-xs text-gray-400 mt-0.5">
-            Créé le {dateFormat(token.createdAt, "DD MMM YYYY à HH:mm")}
+            Créé le {dateFormat(token.createdAt, "DD MMM YYYY HH:mm")}
           </p>
         </div>
         <span
@@ -340,6 +340,7 @@ function CreateTokenModal({
               policy={policy}
               servers={servers}
               onChange={setPolicy}
+              isTokenProcess
             />
           </div>
         </form>

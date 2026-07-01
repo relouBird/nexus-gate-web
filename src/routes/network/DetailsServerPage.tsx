@@ -4,12 +4,11 @@ import { PageHeader } from "@/components/gen/PageHeader";
 import { useSeoHead } from "@/composables/useSeoHead";
 import { useNotify } from "@/helpers/notifications.helper";
 import { pause } from "@/constants";
-import type { Rule, RequestLog, Server } from "@/types/nexusgate.type";
+import type { Rule, Server } from "@/types/nexusgate.type";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ServerInfoCard } from "@/components/network/ServerInfoCard";
 import RuleModal from "@/components/network/RuleModal";
-import LogTable from "@/components/network/LogTable";
 import RuleTable from "@/components/network/RuleTable";
 import { Gear1 } from "@tailgrids/icons";
 import { useStore } from "zustand";
@@ -25,6 +24,7 @@ import RevokeConfirmModal from "@/components/network/RevokeConfirmModal";
 import GrantUsersModal from "@/components/network/GrantUsersModal";
 import TokenAuthConfirmModal from "@/components/network/TokenAuthConfirmModal";
 import ServerFastAction from "@/components/network/ServerFastAction";
+import HeadersEditor from "@/components/network/HeadersEditor";
 
 // ─── MAIN PAGE ─────────────────────────────────────────────────
 
@@ -49,6 +49,7 @@ export default function DetailsServerPage() {
     revokeServer,
     deleteServer,
     tokenAuthServer,
+    setServerHeader,
     grantServer,
   } = useStore(useServerStore);
   const { rules, getManyRule, createRule, updateRule, deleteRule } =
@@ -60,7 +61,9 @@ export default function DetailsServerPage() {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const [logs, setLogs] = useState<RequestLog[]>([]);
+  const [headers, setHeaders] = useState<Record<string, string>>(
+    server ? server.headers : {},
+  );
   const [showRuleModal, setShowRuleModal] = useState(false);
 
   // Création server
@@ -82,7 +85,6 @@ export default function DetailsServerPage() {
         console.log("GET ONE SERVER CALLED");
         await getServer(String(id), notify);
         await getManyRule(String(id), notify);
-        setLogs([]);
       } catch (error) {
         console.log("Failed to fetch server:", String(error));
       } finally {
@@ -98,7 +100,7 @@ export default function DetailsServerPage() {
     async (u: ServerProcessData) => {
       try {
         console.log("DATA ====>", u.name);
-        await updateServer({ id: server?.id ?? "", ...u }, notify);
+        await updateServer({ id: id ?? "", ...u }, notify);
       } catch (error) {
         console.log("Votre Erreur est : ", error);
       }
@@ -183,6 +185,12 @@ export default function DetailsServerPage() {
     );
   }
 
+  // ─── Gérer Headers Server ───────────────────────────────────
+  async function handleServerHeader() {
+    await pause(500);
+    await setServerHeader({ id: server?.id ?? "", headers }, notify);
+  }
+
   // ─── Handlers Delete Server ───────────────────────────────
   async function handleDeleteServer() {
     try {
@@ -235,7 +243,7 @@ export default function DetailsServerPage() {
                 />
               </section>
 
-              <section className="lg:col-span-3">
+              <section className="lg:col-span-3 pt-4">
                 {/* Actions rapides */}
                 <ServerFastAction
                   server={server}
@@ -251,7 +259,12 @@ export default function DetailsServerPage() {
 
               {/* Logs */}
               <section className="lg:col-span-6">
-                <LogTable logs={logs} />
+                <HeadersEditor
+                  headers={headers}
+                  onChange={setHeaders}
+                  onValid={handleServerHeader}
+                  disabled={false}
+                />
               </section>
             </div>
           </>

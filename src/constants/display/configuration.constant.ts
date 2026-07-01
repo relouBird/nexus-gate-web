@@ -8,6 +8,7 @@ import {
   UserMultiple1,
   Gear1,
   Book4,
+  FileTextMultiple,
 } from "@tailgrids/icons";
 
 export const NAV_ITEMS: NavItem[] = [
@@ -33,6 +34,11 @@ export const NAV_ITEMS: NavItem[] = [
         label: "Règles",
         path: "/network/rule",
         icon: Book4,
+      },
+      {
+        label: "Journaux",
+        path: "/network/logs",
+        icon: FileTextMultiple,
       },
     ],
   },

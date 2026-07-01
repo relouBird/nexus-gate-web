@@ -26,6 +26,7 @@ import ForgotPasswordPage from "./routes/auth/ForgotPasswordPage";
 import "./App.css";
 import DetailsServerPage from "./routes/network/DetailsServerPage";
 import TeamSettingsPage from "./routes/team/TeamSettings";
+import LogsPage from "./routes/network/LogsPage";
 
 function Build() {
   const { close, visible, message, color } = useStore(useNotificationStore);
@@ -52,6 +53,7 @@ function Build() {
               <Route path="servers/:id" element={<DetailsServerPage />} />
               <Route path="tokens" element={<TokensPage />} />
               <Route path="rule" element={<RulePage />} />
+              <Route path="logs" element={<LogsPage />} />
             </Route>
             <Route path="team">
               <Route path="users" element={<UsersPage />} />
