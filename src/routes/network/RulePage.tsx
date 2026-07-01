@@ -126,8 +126,9 @@ export default function RulePage() {
     return (
       <div>
         <PageHeader
-          title="Utilisateurs"
-          description="Gérez les membres de votre équipe"
+          title="Filtres et Règles"
+          description="Gérez vos filtres et règles sur les serveurs pour assurer la sécurité et la conformité des ressources"
+          disabled
         />
         <AccessDenied allowedRoles={["CREATOR", "ADMIN"]} />
       </div>
@@ -140,7 +141,7 @@ export default function RulePage() {
         title="Filtres et Règles"
         buttonName="Créer un Filtre ou une Règle"
         description="Gérez vos filtres et règles sur les serveurs pour assurer la sécurité et la conformité des ressources"
-        onView={() => console.log("View action triggered")}
+        disabled
       />
 
       <Overlay
