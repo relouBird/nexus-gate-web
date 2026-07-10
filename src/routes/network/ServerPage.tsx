@@ -163,7 +163,8 @@ export default function ServerPage() {
   const notify = useNotify();
 
   // Stores
-  const { servers, getManyServer, createServer } = useStore(useServerStore);
+  const { servers, getManyServer, setServer, createServer } =
+    useStore(useServerStore);
   const { user: me } = useStore(useMeStore);
 
   const navigate = useNavigate();
@@ -270,7 +271,10 @@ export default function ServerPage() {
                 <ServerCard
                   key={server.id}
                   server={server}
-                  onClick={() => navigate(`/network/servers/${server.id}`)}
+                  onClick={() => {
+                    setServer(null);
+                    navigate(`/network/servers/${server.id}`);
+                  }}
                 />
               ))}
             </div>
