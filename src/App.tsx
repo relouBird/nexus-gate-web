@@ -21,12 +21,12 @@ import RegisterPage from "@/routes/auth/RegisterPage";
 import OtpPage from "./routes/auth/OtpPage";
 import ResetPasswordPage from "./routes/auth/ResetPasswordPage";
 import ForgotPasswordPage from "./routes/auth/ForgotPasswordPage";
-
-// Load les styles globaux
-import "./App.css";
 import DetailsServerPage from "./routes/network/DetailsServerPage";
 import TeamSettingsPage from "./routes/team/TeamSettings";
 import LogsPage from "./routes/network/LogsPage";
+
+// Load les styles globaux
+import "./App.css";
 
 function Build() {
   const { close, visible, message, color } = useStore(useNotificationStore);

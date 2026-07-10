@@ -142,7 +142,10 @@ export default function authService(): AuthServiceProps {
   ): Promise<AxiosResponse<UpdateTeamResponse>> => {
     return await request("/team/update", {
       method: "post",
-      data: payload,
+      data: {
+        name: payload.teamName,
+        slug: payload.slug,
+      },
     });
   };
 

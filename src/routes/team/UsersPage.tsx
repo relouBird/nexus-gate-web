@@ -182,7 +182,7 @@ export default function UsersPage() {
         </div>
       </Overlay>
 
-      {/* Modales */}
+      {/* Créer un utilisateur */}
       {showCreate && (
         <UserProcessModal
           servers={servers}
@@ -192,7 +192,7 @@ export default function UsersPage() {
         />
       )}
 
-      {/* Modales */}
+      {/* Voir un utilisateur */}
       {showView && (
         <UserProcessModal
           user={showView}

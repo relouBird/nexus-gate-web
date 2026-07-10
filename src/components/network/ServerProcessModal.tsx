@@ -162,7 +162,7 @@ export default function ServerProcessModal({
                 <button
                   key={t}
                   type="button"
-                  disabled={loading || disabled}
+                  disabled={loading || disabled || t == "LOCAL"}
                   onClick={() => {
                     formTemplate.setData("type", t);
                     // Vide l'URL si on passe en LOCAL
@@ -176,7 +176,7 @@ export default function ServerProcessModal({
                         ? "border-blue-300 bg-blue-50 text-blue-700"
                         : "border-orange-300 bg-orange-50 text-orange-700"
                       : "border-base-200 bg-background-50 text-foreground-soft-500 hover:border-base-300 hover:text-title-50",
-                    (loading || disabled) && "opacity-50 cursor-not-allowed",
+                    (loading || disabled || t == "LOCAL") && "opacity-50 cursor-not-allowed",
                   )}
                 >
                   {t === ServerTypes.CLOUD ? "☁ Cloud" : "⬡ Local"}
