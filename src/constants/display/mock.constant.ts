@@ -21,6 +21,7 @@ export const MOCK_SERVERS: Server[] = [
     url: "https://api.techcorp.com",
     status: ServerStatusTypes.ONLINE,
     type: ServerTypes.CLOUD,
+    headers: {},
     teamId: "team-001",
     requireToken: true,
     tunnelSession: null,
@@ -34,6 +35,7 @@ export const MOCK_SERVERS: Server[] = [
     identifier: "api-staging-b2c3d4e5",
     url: "https://staging.techcorp.com",
     status: ServerStatusTypes.ONLINE,
+    headers: {},
     type: ServerTypes.CLOUD,
     teamId: "team-001",
     requireToken: false,
@@ -51,6 +53,7 @@ export const MOCK_SERVERS: Server[] = [
     status: ServerStatusTypes.ONLINE,
     teamId: "team-001",
     requireToken: true,
+    headers: {},
     tunnelSession: {
       id: "tun-001",
       serverId: "srv-003",
@@ -71,6 +74,7 @@ export const MOCK_SERVERS: Server[] = [
     status: ServerStatusTypes.OFFLINE,
     teamId: "team-001",
     requireToken: false,
+    headers: {},
     tunnelSession: {
       id: "tun-002",
       serverId: "srv-004",
@@ -87,6 +91,7 @@ export const MOCK_SERVERS: Server[] = [
     name: "Auth Microservice",
     identifier: "auth-microservice-e5f6g7h8",
     url: "https://auth.techcorp.com",
+    headers: {},
     type: ServerTypes.CLOUD,
     status: ServerStatusTypes.OFFLINE,
     teamId: "team-001",
@@ -105,7 +110,7 @@ export const MOCK_TOKENS: GatewayToken[] = [
     id: "tok-001",
     name: "Mobile App Token",
     value: "gw_mobileapp_xxxxxxxxxxxx",
-    scope: "*",
+    scope: [],
     userId: "usr-001",
     teamId: "team-001",
     revoked: false,
@@ -115,7 +120,7 @@ export const MOCK_TOKENS: GatewayToken[] = [
     id: "tok-002",
     name: "CI/CD Pipeline",
     value: "gw_cicd_xxxxxxxxxxxx",
-    scope: "srv-001,srv-002",
+    scope: [],
     userId: "usr-001",
     teamId: "team-001",
     revoked: false,
@@ -125,7 +130,9 @@ export const MOCK_TOKENS: GatewayToken[] = [
     id: "tok-003",
     name: "Partenaire externe",
     value: "gw_partner_xxxxxxxxxxxx",
-    scope: "srv-001",
+    scope: [
+      { gatewayTokenId: "scope-003", serverId: "srv-001", createdAt: "" },
+    ],
     userId: "usr-002",
     teamId: "team-001",
     revoked: false,
@@ -135,7 +142,7 @@ export const MOCK_TOKENS: GatewayToken[] = [
     id: "tok-004",
     name: "Token legacy (révoqué)",
     value: "gw_legacy_xxxxxxxxxxxx",
-    scope: "*",
+    scope: [],
     userId: "usr-001",
     teamId: "team-001",
     revoked: true,
@@ -145,7 +152,7 @@ export const MOCK_TOKENS: GatewayToken[] = [
     id: "tok-005",
     name: "Dashboard interne",
     value: "gw_dashboard_xxxxxxxxxxxx",
-    scope: "srv-001,srv-003",
+    scope: [],
     userId: "usr-003",
     teamId: "team-001",
     revoked: false,
@@ -365,7 +372,6 @@ export const MOCK_RECENT_LOGS: RequestLog[] = [
     via: "tunnel",
   },
 ];
-
 
 // ─── STATS PRÉ-CALCULÉES (simulées depuis RequestLog 24h) ─────
 
