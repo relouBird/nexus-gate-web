@@ -4,6 +4,8 @@ import BrandingGridIcon from "../icons/BrandingGridIcon";
 import { useAuthStore } from "@/stores/auth.store";
 import { useStore } from "zustand";
 
+import Logo from "@/assets/logo.png";
+
 /**
  * Layout pour les pages publiques : Login, Register.
  * Écran splitté : colonne gauche branding / colonne droite formulaire.
@@ -29,7 +31,7 @@ export function LayoutAuth() {
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-2">
-          <img src="/logo.png" alt="NexusGate" className="size-16 rounded-xl" />
+          <img src={Logo} alt="NexusGate" className="size-16 rounded-xl" />
           <span className="font-mono font-semibold text-white text-2xl tracking-tight leading-none">
             Nexus
             <br />
@@ -69,7 +71,7 @@ export function LayoutAuth() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:py-0">
         {/* Logo mobile uniquement */}
         <div className="flex lg:hidden items-center gap-2 mb-10">
-          <img src="/logo.png" alt="NexusGate" className="size-8 rounded-lg" />
+          <img src={Logo} alt="NexusGate" className="size-8 rounded-lg" />
           <span className="font-mono font-semibold text-title-50 text-base leading-none">
             Nexus<span className="text-primary-500">Gate</span>
           </span>

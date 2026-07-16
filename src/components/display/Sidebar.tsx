@@ -11,6 +11,8 @@ import { useNotify } from "@/helpers/notifications.helper";
 import { useState } from "react";
 import { Spinner } from "../ui/Spinner";
 
+import Logo from "@/assets/logo.png";
+
 export function Sidebar() {
   const navigate = useNavigate();
   const notify = useNotify();
@@ -33,7 +35,7 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 z-50 h-screen w-64 border-r border-base-200 bg-background-50/95 backdrop-blur-sm">
       <div className="flex h-16 items-center gap-1.5 pl-4 pr-6 pt-2">
         {/* Logo */}
-        <img src="/logo.png" alt="Logo" className="size-9 rounded-lg" />
+        <img src={Logo} alt="Logo" className="size-9 rounded-lg" />
         <p className="text-base flex flex-col gap-0 font-semibold translate-y-0.5 font-mono text-title-50">
           <span className="block py-0">Nexus</span>
           <span className="block py-0 text-secondary-900 -translate-y-1">
