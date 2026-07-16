@@ -6,6 +6,7 @@ import type { GatewayToken } from "@/types/nexusgate.type";
 export interface CreateGatewayTokenPayload {
   name: string;
   scope?: string[];
+  expiresAt?: string;
 }
 
 export interface RemoveGatewayTokenPayload {

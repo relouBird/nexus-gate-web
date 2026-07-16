@@ -56,11 +56,15 @@ export default function TokensPage() {
 
   // ─── Handlers ─────────────────────────────────────────────
 
-  async function handleCreateToken(name: string, scope: string[]) {
+  async function handleCreateToken(
+    name: string,
+    scope: string[],
+    expiresAt?: string,
+  ) {
     setCreateLoading(true);
     try {
       await pause(400);
-      await createToken({ name, scope }, notify);
+      await createToken({ name, scope, expiresAt }, notify);
       setShowCreateModal(false);
     } catch (error) {
       console.log("ERROR ===>", error);
@@ -248,7 +252,7 @@ function CreateTokenModal({
 }: {
   servers: Server[];
   onClose: () => void;
-  onCreate: (name: string, scope: string[]) => void;
+  onCreate: (name: string, scope: string[], expiresAt?: string) => void;
   isLoading: boolean;
 }) {
   const [name, setName] = useState("");
@@ -256,8 +260,18 @@ function CreateTokenModal({
     mode: "include",
     serverIds: [],
   });
+  const [hasExpiration, setHasExpiration] = useState(false);
+  const [expiresAt, setExpiresAt] = useState("");
 
-  const canSubmit = name.trim().length >= 5 && policy.serverIds.length > 0;
+  // Date minimale = demain (empêche de choisir une date passée ou aujourd'hui)
+  const [minDate] = useState(() =>
+    new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+  );
+
+  const canSubmit =
+    name.trim().length >= 5 &&
+    policy.serverIds.length > 0 &&
+    (!hasExpiration || expiresAt.length > 0);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -268,7 +282,13 @@ function CreateTokenModal({
       ? servers.map((s) => s.id)
       : policy.serverIds;
 
-    onCreate(name.trim(), finalScope);
+    // Convertir la date locale (YYYY-MM-DD) en ISO string complet pour le DTO
+    const finalExpiresAt =
+      hasExpiration && expiresAt
+        ? new Date(`${expiresAt}T23:59:59`).toISOString()
+        : undefined;
+
+    onCreate(name.trim(), finalScope, finalExpiresAt);
   }
 
   return (
@@ -342,6 +362,63 @@ function CreateTokenModal({
               onChange={setPolicy}
               isTokenProcess
             />
+          </div>
+
+          {/* Expiration */}
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="token-expiration-toggle"
+                className="text-xs font-medium text-gray-400 uppercase tracking-wider"
+              >
+                Expiration
+              </label>
+              <button
+                id="token-expiration-toggle"
+                type="button"
+                role="switch"
+                aria-checked={hasExpiration}
+                onClick={() => {
+                  setHasExpiration((v) => !v);
+                  if (hasExpiration) setExpiresAt("");
+                }}
+                disabled={isLoading}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-40 ${
+                  hasExpiration ? "bg-indigo-500" : "bg-gray-200"
+                }`}
+              >
+                <span
+                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                    hasExpiration ? "translate-x-5" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {hasExpiration ? (
+              <>
+                <input
+                  id="token-expires-at"
+                  type="date"
+                  value={expiresAt}
+                  min={minDate}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-gray-700
+                           transition-colors
+                           focus:outline-none focus:ring-2 focus:border-indigo-400 focus:ring-indigo-100"
+                />
+                {expiresAt.length === 0 && (
+                  <p className="text-xs text-red-500">
+                    Choisissez une date d'expiration
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-xs text-gray-400">
+                Le token n'expirera jamais
+              </p>
+            )}
           </div>
         </form>
 
