@@ -1,0 +1,106 @@
+name: First nexus-gate deployment
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: nexus-gate-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Initialize and deploy nexus-gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Initialize production through SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_SSH_PORT || 5022 }}
+          script_stop: true
+          script: |
+            set -e
+
+            APP_DIR="$HOME/nexus-gate"
+            PUBLIC_DIR="$APP_DIR/dist"
+            BUILD_DIR="$APP_DIR/.dist-build"
+            REPOSITORY="https://github.com/relouBird/nexus-gate-web.git"
+            BRANCH="main"
+            NODE_ENV_ACTIVATE="$HOME/nodevenv/nexus-gate/22/bin/activate"
+            ENV_FILE="$APP_DIR/.env"
+            DEPLOY_LOCK="$HOME/.nexus-gate-deploy.lock"
+
+            if [ ! -f "$NODE_ENV_ACTIVATE" ]; then
+              echo "ERROR: Node environment not found: $NODE_ENV_ACTIVATE"
+              exit 1
+            fi
+
+            # CloudLinux's activation script reads optional unset variables.
+            # Load it before enabling Bash nounset for the deployment itself.
+            source "$NODE_ENV_ACTIVATE"
+            set -u
+
+            if [ ! -d "$APP_DIR" ] || [ ! -f "$ENV_FILE" ]; then
+              echo "ERROR: Create $ENV_FILE on the server before running this workflow."
+              echo "The workflow never copies local .env files or GitHub secrets into the application directory."
+              exit 1
+            fi
+
+            if [ -d "$APP_DIR/.git" ]; then
+              echo "ERROR: Application already initialized. Use the normal deploy workflow."
+              exit 1
+            fi
+
+            # Dotfiles (.env*, ...) are server-side configuration and are kept.
+            # dist/ is the public directory, node_modules may be a CloudLinux symlink.
+            EXTRA_FILE="$(find "$APP_DIR" -mindepth 1 -maxdepth 1 ! -name '.*' ! -name 'dist' ! -name 'node_modules' -print -quit)"
+            if [ -n "$EXTRA_FILE" ]; then
+              echo "ERROR: Existing directory contains unexpected files: $EXTRA_FILE"
+              exit 1
+            fi
+
+            if ! mkdir "$DEPLOY_LOCK" 2>/dev/null; then
+              echo "ERROR: Another deployment is already running."
+              exit 1
+            fi
+            trap 'rmdir "$DEPLOY_LOCK"' EXIT
+
+            command -v rsync >/dev/null 2>&1 || {
+              echo "ERROR: rsync is required on the server."
+              exit 1
+            }
+
+            cd "$APP_DIR"
+            git init
+            git remote add origin "$REPOSITORY"
+            git fetch --depth=1 origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+
+            test -f "$APP_DIR/package-lock.json"
+
+            node --version
+            npm ci --include=dev
+
+            # Build in a temporary directory: the live site is untouched if it fails.
+            rm -rf -- "$BUILD_DIR"
+            npm run build -- --outDir "$BUILD_DIR" --emptyOutDir
+            test -f "$BUILD_DIR/index.html"
+
+            # Documentation is not part of the runtime.
+            find "$APP_DIR" -maxdepth 1 -type f -iname '*.md' -delete
+
+            mkdir -p "$PUBLIC_DIR"
+            rsync -a --delete \
+              --exclude='.htaccess' \
+              --exclude='.well-known/' \
+              --exclude='cgi-bin/' \
+              --exclude='error_log' \
+              --exclude='*.md' \
+              "$BUILD_DIR/" "$PUBLIC_DIR/"
+
+            rm -rf -- "$BUILD_DIR"
+
+            echo "First deployment successful."
